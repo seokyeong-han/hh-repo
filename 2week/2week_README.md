@@ -1,3 +1,7 @@
-# 2week readMe
+# 시퀀스 다이어그램 정리
 
-<img width="663" alt="스크린샷 2025-04-01 오후 10 10 40" src="https://github.com/user-attachments/assets/4ec19183-6eda-4b16-8d0a-53209fcd2f3e" />
+1. 충전 및 잔액 조회
+3. 물품 구매
+4. 쿠폰사용
+
+![시퀀스](https://github.com/user-attachments/assets/489441d6-7ade-48b9-8e5c-2d4643b8885a)
