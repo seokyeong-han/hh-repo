@@ -1,9 +1,6 @@
 package com.example.ecommerce.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,10 +18,24 @@ public class Balance {
 
     private Date updateDt;
 
+    @OneToOne
+    @JoinColumn(name = "user_id") // 외래키 지정
+    private User user;
+
+    // ✅ 기본 생성자 (JPA에서 필요)
+    public Balance() {}
+
+    // ✅ 매개변수를 받는 생성자 추가
+    public Balance(User user, Long amount, Date updateDt) {
+        this.user = user;
+        this.amount = (amount != null) ? amount : 0L;
+        this.updateDt = updateDt;
+    }
+
     public Long getBalance() { //잔액 조회
         return this.amount;
     }
-
+    public void setBalance(Long amount) {this.amount = amount;}
     //충전
 
     //사용
