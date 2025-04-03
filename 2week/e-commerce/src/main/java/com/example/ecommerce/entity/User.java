@@ -2,9 +2,7 @@ package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -12,14 +10,15 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "\"user\"")  // 큰따옴표 사용
+@Entity // 큰따옴표 사용
 public class User {
     private static final Long MAX_BALANCE = 10000L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+
 
     private String name;
 
@@ -30,7 +29,7 @@ public class User {
     private List<Transaction> transactions;
 
     // ✅ 매개변수 있는 생성자 추가
-    public User(Long userId, String namesS) {
+    public User(Long userId, String name) {
         this.userId = userId;
         this.name = name;
     }
@@ -59,6 +58,14 @@ public class User {
         if(balance.getBalance() < 0){
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
+    }
+    /////////////////
+    //lombok안됨
+    public Long getUserId() {  // Lombok 없이 명시적 추가
+        return this.userId;
+    }
+    public String getName() {  // Lombok 없이 명시적 추가
+        return this.name;
     }
 
 

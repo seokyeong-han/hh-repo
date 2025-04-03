@@ -13,7 +13,7 @@ public class UserService {
 
     private static final String USER_NOT_FOUND_MSG = "사용자를 찾을 수 없습니다.";
 
-    public User getUser(Long userId){
+    public User getUserDetail(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG));
 

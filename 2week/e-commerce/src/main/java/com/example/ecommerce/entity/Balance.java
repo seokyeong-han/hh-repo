@@ -26,10 +26,9 @@ public class Balance {
     public Balance() {}
 
     // ✅ 매개변수를 받는 생성자 추가
-    public Balance(User user, Long amount, Date updateDt) {
+    public Balance(User user, Long amount) {
         this.user = user;
         this.amount = (amount != null) ? amount : 0L;
-        this.updateDt = updateDt;
     }
 
     public Long getBalance() { //잔액 조회

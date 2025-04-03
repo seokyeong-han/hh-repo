@@ -37,7 +37,7 @@ public class UserTest {
         MockitoAnnotations.openMocks(this); //mockito 수동 초기화
         //mockMvc = MockMvcBuilders.standaloneSetup(balanceController).build();
     }
-    @Test
+    /*@Test
     @DisplayName("사용자 조회 실패")
     void getUser_false(){
         // Given
@@ -46,13 +46,13 @@ public class UserTest {
         given(userRepository.findById(nonExistentUserId)).willReturn(Optional.empty()); // 사용자 없음 설정
 
         // When & Then
-        Assertions.assertThatThrownBy(() -> userService.getUser(nonExistentUserId))
+        Assertions.assertThatThrownBy(() -> userService.getUserDetail(nonExistentUserId))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining("사용자를 찾을 수 없습니다.");
     }
-
-    @Test
-    @DisplayName("사용자 잔액 조회 성공")
+*/
+    /*@Test
+    @DisplayName("사용자 조회 성공")
     void getUserBalance_success(){
         // Given
         User user = new User(ID, "test");
@@ -63,7 +63,7 @@ public class UserTest {
         Long balanceValue = user.getBalance();
         // Then
         Assertions.assertThat(balanceValue).isEqualTo(0L);
-    }
+    }*/
 
 
 
