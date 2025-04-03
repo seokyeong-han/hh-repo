@@ -26,4 +26,6 @@ public class Balance {
     @OneToOne
     @JoinColumn(name = "user_id") // FK 설정
     private User user;
+
+
 }

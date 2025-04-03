@@ -22,7 +22,7 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Balance balance;
 
-    public Long getBalanceEntity(){
+    public Balance getBalanceEntity(){
         return balance;
     }
 
@@ -32,5 +32,12 @@ public class User {
             throw new IllegalArgumentException("최대 잔고를 초과하였습니다.");
         }
         balance.setAmount(balance.getAmount() + amount);
+    }
+    //사용 메서드
+    public void deductBalance(Long amount) {
+        if (balance.getAmount() - amount < 0) {
+            throw new IllegalArgumentException("잔액이 부족합니다.");
+        }
+        balance.setAmount(balance.getAmount() - amount);
     }
 }
