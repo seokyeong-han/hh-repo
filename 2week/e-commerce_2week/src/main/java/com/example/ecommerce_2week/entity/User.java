@@ -22,8 +22,8 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Balance balance;
 
-    public Long getBalance(){
-        return balance != null ? balance.getAmount() : 0L;
+    public Long getBalanceEntity(){
+        return balance;
     }
 
     //충전 메서드
