@@ -4,6 +4,8 @@
 
 2️⃣클래스다이어그램 : https://github.com/seokyeong-han/hh-repo/blob/2week/2week/classDiagram.md
 
+3️⃣swagger 설정 : https://github.com/seokyeong-han/hh-repo/commit/c3343fa0713615597572c3b68a3d4f4fef1b694c
+
 -----------------------------------------------------------------------------------------------------------------
 ### **커밋 링크**
 
