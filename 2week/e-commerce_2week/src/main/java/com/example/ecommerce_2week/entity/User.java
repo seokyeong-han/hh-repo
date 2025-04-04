@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(name = "users")
 public class User {
     private static final Long MAX_BALANCE = 1_000_000L; //최대 100만
     private static final Long MIN_BALANCE = 0L;
