@@ -18,6 +18,15 @@ public class JpaProductRepositoryImpl implements ProductRepository {
                 .map(this::toDomain);
     }
 
+    @Override
+    public void save(Product product) {
+        jpaRepository.save(toEntity(product));
+    }
+
+    private ProductJpaEntity toEntity(Product product) {
+        return new ProductJpaEntity(product.getId(), product.getPrice(), product.getStock());
+    }
+
     private Product toDomain(ProductJpaEntity entity) {
         return new Product(entity.getId(), entity.getPrice(), entity.getStock());
     }

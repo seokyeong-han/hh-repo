@@ -23,7 +23,11 @@ public class ProductJpaEntity {
 
     private Integer stock;
 
-
+    public ProductJpaEntity(Long id, Long price, int stock) {
+        this.id = id;
+        this.price = price;
+        this.stock = stock;
+    }
 
 
 }
