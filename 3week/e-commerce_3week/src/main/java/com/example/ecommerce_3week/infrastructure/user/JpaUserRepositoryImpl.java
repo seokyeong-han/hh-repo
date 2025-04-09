@@ -18,8 +18,18 @@ public class JpaUserRepositoryImpl implements UserRepository {
         return userJpaRepository.findById(id)
                 .map(this::toDomain); //JPA Entity → 도메인 모델로 변환
     }
+    @Override
+    public User save(User user) {
+        return toDomain(
+                userJpaRepository.save(toEntity(user))
+        );
+    }
 
     private User toDomain(UserJpaEntity entity) {
-        return new User(entity.getId(), entity.getUsername());
+        return new User(entity.getId(), entity.getUsername(), entity.getBalance());
+    }
+    // 도메인 → JPA Entity 변환
+    private UserJpaEntity toEntity(User user) {
+        return new UserJpaEntity(user.getId(), user.getUsername(), user.getBalance());
     }
 }

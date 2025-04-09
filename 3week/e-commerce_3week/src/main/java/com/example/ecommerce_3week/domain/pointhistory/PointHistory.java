@@ -1,4 +1,4 @@
-package com.example.ecommerce_3week.domain.history;
+package com.example.ecommerce_3week.domain.pointhistory;
 
 import com.example.ecommerce_3week.common.enums.PointTransactionType;
 
@@ -17,4 +17,25 @@ public class PointHistory {
         this.type = type;
         this.createdAt = LocalDateTime.now();
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public PointTransactionType getType() {
+        return type;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
 }

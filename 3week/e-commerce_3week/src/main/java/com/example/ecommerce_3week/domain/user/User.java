@@ -11,12 +11,15 @@ public class User {
     private Long balance;
     private LocalDateTime createdAt;
 
-    public User(Long id, String username) {
+    public User(Long id, String username, Long balance) {
         this.id = id;
         this.username = username;
-        this.createdAt = LocalDateTime.now(); // 생성 시점 기록
+        this.balance = balance != null ? balance : 0L;
     }
 
+    public void charge(Long amount) {
+        this.balance = getBalance() + amount;
+    }
     public Long getId() {
         return id;
     }
