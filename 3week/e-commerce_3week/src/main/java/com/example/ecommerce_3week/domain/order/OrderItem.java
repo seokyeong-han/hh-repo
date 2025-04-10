@@ -3,7 +3,7 @@ package com.example.ecommerce_3week.domain.order;
 public class OrderItem {
     private Long productId;
     private int quantity;
-    private Long pricePerItem; //한개당 가격
+    private Long pricePerItem; //상품 한개당 가격
 
     public OrderItem(Long productId, int quantity, Long pricePerItem) {
         this.productId = productId;

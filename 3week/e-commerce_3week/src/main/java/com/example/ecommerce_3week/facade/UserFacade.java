@@ -35,7 +35,7 @@ public class UserFacade {
         //유저 저장
         User chargUser = userService.save(user);
         //히스토리 저장
-        pointHistoryService.save(chargUser);
+        pointHistoryService.chargeSave(chargUser);
 
     }
 

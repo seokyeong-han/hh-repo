@@ -13,8 +13,11 @@ public class PointHistoryService {
     private final PointHistoryRepository pointHistoryRepository;
 
     //저장
-    public void save(User user){
+    public void chargeSave(User user){
         PointHistory history = new PointHistory(user.getId(), user.getBalance(), PointTransactionType.CHARGE);
+        pointHistoryRepository.save(history);
+    }
+    public void useSave(PointHistory history){
         pointHistoryRepository.save(history);
     }
 
