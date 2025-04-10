@@ -24,8 +24,19 @@ public class User {
     }
 
     public void charge(Long amount) {
+        validateAmount(amount);
         this.balance = getBalance() + amount;
     }
+
+    private void validateAmount(Long amount) {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("충전금액은 0보다 커야합니다.");
+        }
+        if ((this.balance != null ? this.balance : 0L) + amount > 1_000_000L) {
+            throw new IllegalArgumentException("최대금액 이상 충전 하실 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }

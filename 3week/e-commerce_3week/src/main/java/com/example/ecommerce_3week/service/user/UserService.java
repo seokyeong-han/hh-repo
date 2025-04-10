@@ -21,13 +21,7 @@ public class UserService {
 
     //충전
     public void charge(User user, Long amount) {
-        validateAmount(user.getBalance(), amount);
         user.charge(amount); // 실제 변경은 엔티티가 함
-    }
-
-    private void validateAmount(Long balance, Long amount) {
-        if (amount == null || amount <= 0) throw new IllegalArgumentException("충전금액은 0보다 커야합니다.");
-        if ((balance != null ? balance : 0L) + amount > 1_000_000L) throw new IllegalArgumentException("최대금액 이상 충전 하실 수 없습니다.");
     }
 
     //저장
