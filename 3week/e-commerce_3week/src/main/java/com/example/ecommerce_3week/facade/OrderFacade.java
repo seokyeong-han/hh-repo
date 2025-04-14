@@ -36,12 +36,12 @@ public class OrderFacade {
         User user = userService.findUserById(request.getUserId());
 
         //파사드 dto로 변환
-        List<OrderFacadeRequest> requestItems = request.getItems().stream()
-                .map(i -> new OrderFacadeRequest(i.getProductId(), i.getQuantity()))
-                .toList();
+        //피드백 수정
+        List<OrderFacadeRequest> requestItems = OrderRequest.from(request);
 
         //상품조회 및 재고차감
-        PreparedOrderItems prepared = orderService.prepareOrderItems(requestItems);
+        PreparedOrderItems prepared = productService.prepareOrderItems(requestItems);
+
         //주문생성
         Order order = orderService.createOrder(user, prepared.getOrderItems());
         //주문저장

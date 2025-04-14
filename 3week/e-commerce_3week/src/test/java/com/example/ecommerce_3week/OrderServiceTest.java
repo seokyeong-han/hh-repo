@@ -27,7 +27,7 @@ public class OrderServiceTest {
     void setUp() {
         productService = mock(ProductService.class);
         orderRepository = mock(OrderRepository.class);
-        orderService = new OrderService(productService, orderRepository);
+        orderService = new OrderService(orderRepository);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class OrderServiceTest {
         when(productService.getProductById(2L)).thenReturn(product2);
 
         // when
-        PreparedOrderItems prepared = orderService.prepareOrderItems(requests);
+        PreparedOrderItems prepared = productService.prepareOrderItems(requests);
 
         // then
         assertThat(prepared.getProducts()).hasSize(2); //상품 아이템 갯수 2개 인지 확인
