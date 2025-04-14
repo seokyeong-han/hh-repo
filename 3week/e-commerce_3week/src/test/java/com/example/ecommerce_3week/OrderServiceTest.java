@@ -1,8 +1,9 @@
 package com.example.ecommerce_3week;
 
 import com.example.ecommerce_3week.domain.order.Order;
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.order.OrderRepository;
+import com.example.ecommerce_3week.domain.orderitem.OrderItemRepository;
 import com.example.ecommerce_3week.domain.product.Product;
 import com.example.ecommerce_3week.domain.user.User;
 import com.example.ecommerce_3week.dto.order.facade.OrderFacadeRequest;
@@ -21,13 +22,14 @@ import static org.mockito.Mockito.*;
 public class OrderServiceTest {
     private ProductService productService;
     private OrderRepository orderRepository;
+    private OrderItemRepository orderItemRepository;
     private OrderService orderService;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
         orderRepository = mock(OrderRepository.class);
-        orderService = new OrderService(orderRepository);
+        orderService = new OrderService(orderRepository, orderItemRepository );
     }
 
     @Test
@@ -68,8 +70,8 @@ public class OrderServiceTest {
     void createOrder_success() {
         // given
         User user = new User(1L, "testUser", 5000L);
-        OrderItem item1 = new OrderItem(1L, 2, 1000L);
-        OrderItem item2 = new OrderItem(2L, 1, 2000L);
+        OrderItem item1 = new OrderItem(1L,1L, 2, 1000L);
+        OrderItem item2 = new OrderItem(1L,2L, 1, 2000L);
         List<OrderItem> items = List.of(item1, item2);
 
         // when

@@ -1,6 +1,6 @@
 package com.example.ecommerce_3week.dto.order.facade;
 
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.product.Product;
 import lombok.Getter;
 import lombok.Setter;

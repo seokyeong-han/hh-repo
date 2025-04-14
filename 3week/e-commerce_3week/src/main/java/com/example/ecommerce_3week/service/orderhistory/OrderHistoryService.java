@@ -1,6 +1,6 @@
 package com.example.ecommerce_3week.service.orderhistory;
 
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistory;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistoryRepository;
 import com.example.ecommerce_3week.domain.user.User;

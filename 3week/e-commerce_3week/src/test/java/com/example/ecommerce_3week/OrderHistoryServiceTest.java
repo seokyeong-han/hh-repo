@@ -1,19 +1,15 @@
 package com.example.ecommerce_3week;
 
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistory;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistoryRepository;
-import com.example.ecommerce_3week.domain.pointhistory.PointHistoryRepository;
 import com.example.ecommerce_3week.domain.user.User;
 import com.example.ecommerce_3week.service.orderhistory.OrderHistoryService;
-import com.example.ecommerce_3week.service.pointhistory.PointHistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;

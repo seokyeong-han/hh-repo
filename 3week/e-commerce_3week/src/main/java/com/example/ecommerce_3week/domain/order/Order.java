@@ -1,5 +1,7 @@
 package com.example.ecommerce_3week.domain.order;
 
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
