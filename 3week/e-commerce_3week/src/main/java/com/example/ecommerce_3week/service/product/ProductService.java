@@ -36,10 +36,12 @@ public class ProductService {
                     Product product = getProductById(request.getProductId());
                     product.deductStock(request.getQuantity());
                     products.add(product);
-                    return new OrderItem(null, product.getId(), request.getQuantity(), product.getPrice());
+                    return new OrderItem(product.getId(), request.getQuantity(), product.getPrice());
                 })
                 .collect(Collectors.toList());
+
         save(products); //재고 차감 저장
+
         return new PreparedOrderItems(products, orderItems);
     }
 

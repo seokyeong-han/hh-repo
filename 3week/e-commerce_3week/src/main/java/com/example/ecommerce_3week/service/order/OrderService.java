@@ -20,15 +20,6 @@ public class OrderService {
         Order order = new Order(user.getId(), items); //total가격 저장
         save(order);
 
-        Long orderId = order.getId();
-
-        // OrderItem에 orderId 주입 **jpa연관관계를 주지 않아 직접 save
-        List<OrderItem> itemsWithOrderId = items.stream()
-                .map(item -> item.withOrderId(orderId))
-                .toList();
-
-        orderItemRepository.saveAll(itemsWithOrderId);
-
         return order;
     }
 

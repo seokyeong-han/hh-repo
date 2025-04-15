@@ -19,6 +19,11 @@ public class OrderRequest {
         private int quantity;
     }
 
+    public OrderRequest(Long userId, List<OrderItemRequest> items) {
+        this.userId = userId;
+        this.items = items;
+    }
+
     public static List<OrderFacadeRequest> from(OrderRequest request) {
         return request.getItems().stream()
                 .map(i -> new OrderFacadeRequest(i.getProductId(), i.getQuantity()))

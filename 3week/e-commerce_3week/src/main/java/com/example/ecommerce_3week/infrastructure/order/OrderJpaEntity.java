@@ -24,9 +24,6 @@ public class OrderJpaEntity {
     private Long totalPrice;
     private LocalDateTime createdAt;
 
-    // 주문 아이템은 별도 테이블로 관리하는 게 일반적이야.
-    // 여기선 일단 단순화해서 생략할게
-
     public static OrderJpaEntity from(Order order) {
         return new OrderJpaEntity(
                 order.getId(), // 저장 시 null이어도 IDENTITY 전략이면 DB가 생성해줌

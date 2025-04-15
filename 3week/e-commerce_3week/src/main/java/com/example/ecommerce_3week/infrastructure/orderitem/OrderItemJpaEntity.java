@@ -1,5 +1,6 @@
 package com.example.ecommerce_3week.infrastructure.orderitem;
 
+import com.example.ecommerce_3week.infrastructure.order.OrderJpaEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,18 +17,21 @@ public class OrderItemJpaEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long orderId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private OrderJpaEntity order;
+
     private Long productId;
     private int quantity;
     private Long pricePerItem;
     private Long totalPrice;
 
-    public OrderItemJpaEntity(Long orderId, Long productId, int quantity, Long pricePerItem) {
-        this.orderId = orderId;
+    public OrderItemJpaEntity(OrderJpaEntity order, Long productId, int quantity, Long pricePerItem) {
+        this.order = order;
         this.productId = productId;
         this.quantity = quantity;
         this.pricePerItem = pricePerItem;
-        this.totalPrice = pricePerItem * quantity;
     }
 
 }

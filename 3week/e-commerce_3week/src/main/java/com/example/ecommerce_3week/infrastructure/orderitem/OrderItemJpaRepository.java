@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface OrderItemJpaRepository extends JpaRepository<OrderItemJpaEntity, Long> {
-    void saveAll(List<OrderItem> orderItems);
 }
