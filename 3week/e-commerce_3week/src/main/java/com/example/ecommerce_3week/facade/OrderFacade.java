@@ -39,14 +39,15 @@ public class OrderFacade {
 
         //주문생성, 주문 저장
         Order order = orderService.createOrder(user, prepared.getOrderItems());
+
         //주문 히스토리 저장
         orderHistoryService.save(user, prepared.getOrderItems());
 
         //유저 잔액 저장
         userService.save(user);
+
         //포인트 히스토리 저장
-        PointHistory pointHistory = new PointHistory(user.getId(), order.getTotalPrice(), PointTransactionType.USE);
-        pointHistoryService.useSave(pointHistory);
+        pointHistoryService.useSave(new PointHistory(user.getId(), order.getTotalPrice(), PointTransactionType.USE));
 
     }
 }

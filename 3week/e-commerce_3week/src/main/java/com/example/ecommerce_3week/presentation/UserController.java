@@ -17,12 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserFacade userFacade;
-    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserFacadeResponse> getUser(@PathVariable Long id) {
-        User user = userService.findUserById(id);
-        return ResponseEntity.ok(new UserFacadeResponse(user.getId(), user.getUsername(), user.getBalance()));
+        UserFacadeResponse response = userFacade.getUserById(id);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/charge")

@@ -1,4 +1,4 @@
-package com.example.ecommerce_3week;
+package com.example.ecommerce_3week.service;
 
 import com.example.ecommerce_3week.domain.user.User;
 import com.example.ecommerce_3week.domain.user.UserRepository;
