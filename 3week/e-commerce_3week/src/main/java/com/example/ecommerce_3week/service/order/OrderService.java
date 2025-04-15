@@ -22,7 +22,7 @@ public class OrderService {
 
         Long orderId = order.getId();
 
-        // OrderItem에 orderId 주입
+        // OrderItem에 orderId 주입 **jpa연관관계를 주지 않아 직접 save
         List<OrderItem> itemsWithOrderId = items.stream()
                 .map(item -> item.withOrderId(orderId))
                 .toList();
