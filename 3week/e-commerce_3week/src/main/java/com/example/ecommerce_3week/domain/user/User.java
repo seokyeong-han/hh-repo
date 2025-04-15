@@ -17,6 +17,11 @@ public class User {
         this.balance = balance != null ? balance : 0L;
     }
 
+    public User(String username, Long balance) { //id는 자동 생성자라 넣을 필요 없음
+        this.username = username;
+        this.balance = balance != null ? balance : 0L;
+    }
+
     public void deduct(Long amount) {
         if (amount == null || amount <= 0) throw new IllegalArgumentException("금액이 올바르지 않습니다.");
         if (this.balance < amount) throw new IllegalArgumentException("잔액이 부족합니다.");

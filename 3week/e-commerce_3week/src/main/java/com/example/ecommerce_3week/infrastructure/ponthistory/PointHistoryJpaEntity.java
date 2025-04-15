@@ -2,11 +2,13 @@ package com.example.ecommerce_3week.infrastructure.ponthistory;
 
 import com.example.ecommerce_3week.common.enums.PointTransactionType;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Table(name = "point_history")
 @RequiredArgsConstructor
 public class PointHistoryJpaEntity {
