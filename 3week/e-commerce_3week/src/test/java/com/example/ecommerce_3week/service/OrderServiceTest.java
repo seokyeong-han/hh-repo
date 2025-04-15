@@ -1,4 +1,4 @@
-package com.example.ecommerce_3week;
+package com.example.ecommerce_3week.service;
 
 import com.example.ecommerce_3week.domain.order.Order;
 import com.example.ecommerce_3week.domain.orderitem.OrderItem;
@@ -67,7 +67,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("createOrder: 주문 생성 성공")
-    void createOrder_success() {
+    void createOrder_success () {
         // given
         User user = new User(1L, "testUser", 5000L);
         OrderItem item1 = new OrderItem(1L,1L, 2, 1000L);
