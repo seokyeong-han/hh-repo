@@ -23,4 +23,9 @@ public class JpaOrderHistoryRepositoryImpl implements OrderHistoryRepository {
 
         jpaRepository.saveAll(entities);
     }
+
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
+    }
 }

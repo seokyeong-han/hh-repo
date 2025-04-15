@@ -27,6 +27,11 @@ public class JpaPointHistoryRepositoryImpl implements PointHistoryRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
+    }
+
     private PointHistoryJpaEntity toEntity(PointHistory domain) {
         return new PointHistoryJpaEntity(
                 domain.getUserId(),
