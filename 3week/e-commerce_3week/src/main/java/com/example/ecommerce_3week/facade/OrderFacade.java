@@ -13,6 +13,7 @@ import com.example.ecommerce_3week.service.orderhistory.OrderHistoryService;
 import com.example.ecommerce_3week.service.pointhistory.PointHistoryService;
 import com.example.ecommerce_3week.service.product.ProductService;
 import com.example.ecommerce_3week.service.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class OrderFacade {
     private final OrderHistoryService orderHistoryService;
     private final PointHistoryService pointHistoryService;
 
+    @Transactional
     public void placeOrder(OrderRequest request){
         //유저 조회
         User user = userService.findUserById(request.getUserId());

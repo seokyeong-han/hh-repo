@@ -5,4 +5,6 @@ import java.util.List;
 public interface PointHistoryRepository {
     void save(PointHistory history);
     List<PointHistory> findAllByUserId(Long userId);
+
+    void deleteAll();
 }
