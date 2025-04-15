@@ -70,8 +70,8 @@ public class OrderServiceTest {
     void createOrder_success () {
         // given
         User user = new User(1L, "testUser", 5000L);
-        OrderItem item1 = new OrderItem(1L,1L, 2, 1000L);
-        OrderItem item2 = new OrderItem(1L,2L, 1, 2000L);
+        OrderItem item1 = new OrderItem(1L, 2, 1000L);
+        OrderItem item2 = new OrderItem(2L, 1, 2000L);
         List<OrderItem> items = List.of(item1, item2);
 
         // when

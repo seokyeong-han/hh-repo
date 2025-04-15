@@ -41,8 +41,8 @@ public class OrderHistoryServiceTest {
     void saveOrderHistory_success() {
         // given
         User user = new User(1L, "testUser",10_000L);
-        OrderItem item1 = new OrderItem(1L, 1L, 2, 1000L); // 총 2000
-        OrderItem item2 = new OrderItem(1L, 2L, 1, 3000L); // 총 3000
+        OrderItem item1 = new OrderItem(1L,2, 1000L); // 총 2000
+        OrderItem item2 = new OrderItem(2L,1, 3000L); // 총 3000
         List<OrderItem> items = List.of(item1, item2);
 
         // when
