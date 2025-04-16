@@ -118,10 +118,11 @@ public class OrderIntegrationTest {
         assertThat(order.getTotalPrice()).isEqualTo(
                 product1.getPrice() * 1 + product2.getPrice() * 2
         );
-
+        //여기서부터 다시 test
+        // order생성되었는지 orderitem생성되었는지 체크 먼저
         //order item 저장 확인
 
-        //여기서부터 다시 test
+
         // 유저 잔액 감소 확인
         User updatedUser = userRepository.findById(user.getId()).orElseThrow();
         assertThat(updatedUser.getBalance()).isEqualTo(100L - order.getTotalPrice());
