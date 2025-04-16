@@ -14,13 +14,21 @@ public class JpaOrderItemRepositoryImpl implements OrderItemRepository {
     private final OrderItemJpaRepository jpaRepository;
 
     @Override
-    public void saveAll(List<OrderItem> orderItems, OrderJpaEntity orderJpaEntity) {
-        List<OrderItemJpaEntity> entities = orderItems.stream()
-                .map(item -> toEntity(item, orderJpaEntity))
-                .toList();
+    public void saveAll(List<OrderItem> items, Long orderId) {
+        OrderJpaEntity orderEntity = new OrderJpaEntity();  // 비어있는 객체
+        orderEntity.setId(orderId);  // ID만 설정해서 참조
 
-        jpaRepository.saveAll(entities); // JPA bulk insert
+        List<OrderItemJpaEntity> entities = items.stream()
+                .map(item -> new OrderItemJpaEntity(
+                        orderEntity,
+                        item.getProductId(),
+                        item.getQuantity(),
+                        item.getPricePerItem()
+                )).toList();
+
+        jpaRepository.saveAll(entities);
     }
+
     // 도메인 → JPA Entity
     private OrderItemJpaEntity toEntity(OrderItem orderItem, OrderJpaEntity orderJpaEntity) {
         return new OrderItemJpaEntity(

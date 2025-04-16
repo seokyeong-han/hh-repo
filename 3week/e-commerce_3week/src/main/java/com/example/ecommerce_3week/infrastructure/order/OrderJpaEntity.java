@@ -2,17 +2,15 @@ package com.example.ecommerce_3week.infrastructure.order;
 
 import com.example.ecommerce_3week.domain.order.Order;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders") // 실제 DB 테이블명
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor(access = AccessLevel.PUBLIC) // 기존에 PROTECTED였다면 이걸로 변경
 @AllArgsConstructor
 public class OrderJpaEntity {
 

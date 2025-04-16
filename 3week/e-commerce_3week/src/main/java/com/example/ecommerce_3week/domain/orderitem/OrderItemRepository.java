@@ -5,5 +5,5 @@ import com.example.ecommerce_3week.infrastructure.order.OrderJpaEntity;
 import java.util.List;
 
 public interface OrderItemRepository {
-    void saveAll(List<OrderItem> orderItems, OrderJpaEntity orderJpaEntity);
+    void saveAll(List<OrderItem> orderItems, Long orderId);
 }

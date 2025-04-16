@@ -108,10 +108,6 @@ public class OrderIntegrationTest {
 
         // when
         orderFacade.placeOrder(orderRequest); // 실제 주문 호출
-
-        List<Order> orders = orderRepository.findAll();
-        assertThat(orders).hasSize(1);
-
         // 주문이 저장되었는지 확인
         List<Order> orders = orderRepository.findAll();
         assertThat(orders).hasSize(1);
@@ -122,10 +118,19 @@ public class OrderIntegrationTest {
         assertThat(order.getTotalPrice()).isEqualTo(
                 product1.getPrice() * 1 + product2.getPrice() * 2
         );
+
+        //order item 저장 확인
+
         //여기서부터 다시 test
         // 유저 잔액 감소 확인
         User updatedUser = userRepository.findById(user.getId()).orElseThrow();
         assertThat(updatedUser.getBalance()).isEqualTo(100L - order.getTotalPrice());
+
+        // 재고 감소 확인
+        Product updatedProduct1 = productRepository.findById(product1.getId()).orElseThrow();
+        Product updatedProduct2 = productRepository.findById(product2.getId()).orElseThrow();
+        assertThat(updatedProduct1.getStock()).isEqualTo(product1.getStock() - 1);
+        assertThat(updatedProduct2.getStock()).isEqualTo(product2.getStock() - 2);
 
         // 포인트 히스토리 저장 확인
         List<PointHistory> pointHistories = pointHistoryRepository.findAll();
@@ -136,11 +141,7 @@ public class OrderIntegrationTest {
         List<OrderHistory> orderHistories = orderHistoryRepository.findAll();
         assertThat(orderHistories).hasSize(2); // 상품 2개
 
-        // 재고 감소 확인
-        Product updatedProduct1 = productRepository.findById(product1.getId()).orElseThrow();
-        Product updatedProduct2 = productRepository.findById(product2.getId()).orElseThrow();
-        assertThat(updatedProduct1.getStock()).isEqualTo(product1.getStock() - 1);
-        assertThat(updatedProduct2.getStock()).isEqualTo(product2.getStock() - 2);
+
 
     }
 }

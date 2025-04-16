@@ -18,12 +18,12 @@ public class OrderService {
 
     public Order createOrder(User user, List<OrderItem> items) {
         Order order = new Order(user.getId(), items); //total가격 저장
-        save(order);
+        // order 저장
+        Order saveOrder = orderRepository.save(order);
+        //order item 저장
+        orderItemRepository.saveAll(saveOrder.getItems(), saveOrder.getId());
 
         return order;
     }
 
-    public void save(Order order) {
-        orderRepository.save(order);
-    }
 }
