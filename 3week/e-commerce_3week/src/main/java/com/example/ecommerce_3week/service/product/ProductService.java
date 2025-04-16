@@ -31,16 +31,29 @@ public class ProductService {
 
     public PreparedOrderItems prepareOrderItems(List<OrderFacadeRequest> itemRequests) {
         List<Product> products = new ArrayList<>();
-        List<OrderItem> orderItems = itemRequests.stream()
-                .map(request -> {
-                    Product product = getProductById(request.getProductId());
-                    product.deductStock(request.getQuantity());
-                    products.add(product);
-                    return new OrderItem(product.getId(), request.getQuantity(), product.getPrice());
+
+        // 먼저 상품 가져오고, 재고 차감
+        for (OrderFacadeRequest request : itemRequests) {
+            Product product = getProductById(request.getProductId());
+            product.deductStock(request.getQuantity()); // 재고 차감
+            products.add(product);
+        }
+
+        save(products);
+
+        // OrderItem 생성
+        List<OrderItem> orderItems = products.stream()
+                .map(product -> {
+                    // 해당 productId에 맞는 quantity 가져오기
+                    int quantity = itemRequests.stream()
+                            .filter(r -> r.getProductId().equals(product.getId()))
+                            .findFirst()
+                            .orElseThrow()
+                            .getQuantity();
+
+                    return new OrderItem(product.getId(), quantity, product.getPrice());
                 })
                 .collect(Collectors.toList());
-
-        save(products); //재고 차감 저장
 
         return new PreparedOrderItems(products, orderItems);
     }

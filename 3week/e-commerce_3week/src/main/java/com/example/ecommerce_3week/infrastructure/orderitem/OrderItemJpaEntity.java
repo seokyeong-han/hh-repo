@@ -2,13 +2,11 @@ package com.example.ecommerce_3week.infrastructure.orderitem;
 
 import com.example.ecommerce_3week.infrastructure.order.OrderJpaEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@ToString // Lombok의 @ToString
 @Table(name = "order_items")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

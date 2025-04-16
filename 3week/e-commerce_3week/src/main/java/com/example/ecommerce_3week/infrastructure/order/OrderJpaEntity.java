@@ -24,8 +24,15 @@ public class OrderJpaEntity {
     private Long totalPrice;
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemJpaEntity> items = new ArrayList<>();
+
+    public OrderJpaEntity(Long id, Long userId, Long totalPrice, LocalDateTime createdAt) { //생성자 생성
+        this.id = id;
+        this.userId = userId;
+        this.totalPrice = totalPrice;
+        this.createdAt = createdAt;
+    }
 
 
     public Order toDomain() {
