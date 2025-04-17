@@ -95,6 +95,8 @@ public class OrderIntegrationTest {
 
     private User testUser;
     private List<OrderFacadeRequest> itemRequests;
+    private Product savedProduct1;
+
     @BeforeEach
     void setup() {
         // 테스트용 유저 및 상품 세팅
@@ -108,7 +110,7 @@ public class OrderIntegrationTest {
         testUser = new User("testuser", 60000L);
         testUser = userRepository.save(testUser); // 저장된 결과로 다시 할당
         // 테스트용 상품 주문 request 셋팅
-        Product savedProduct1 = productRepository.save(new Product(10000L, 10));
+        savedProduct1 = productRepository.save(new Product(10000L, 10));
         Product savedProduct2 = productRepository.save(new Product(5000L, 5));
         itemRequests = List.of(
                 new OrderFacadeRequest(savedProduct1.getId(), 2),
@@ -170,9 +172,6 @@ public class OrderIntegrationTest {
     @Test
     void 주문_중_재고롤백() {
         // given
-        User user = new User("testuser", 50000L);
-        userRepository.save(user);
-
         Product savedProduct1 = productRepository.save(new Product(10000L, 10));
         Product savedProduct2 = productRepository.save(new Product(5000L, 5));
 
@@ -196,8 +195,10 @@ public class OrderIntegrationTest {
 
     @Test
     void 유저_잔액부족_재고_롤백() {
-        User user = new User("testuser", 50000L);
-        userRepository.save(user);
+        itemRequests = List.of(
+                new OrderFacadeRequest(savedProduct1.getId(), 7));
+
+
 
     }
 
