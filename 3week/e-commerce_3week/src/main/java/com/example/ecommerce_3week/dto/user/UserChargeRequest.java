@@ -6,4 +6,9 @@ import lombok.Getter;
 public class UserChargeRequest {
     private Long userId;
     private Long amount;
+
+    public UserChargeRequest(Long userId, Long amount) {
+        this.userId = userId;
+        this.amount = amount;
+    }
 }

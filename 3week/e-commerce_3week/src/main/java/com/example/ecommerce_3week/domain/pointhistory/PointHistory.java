@@ -18,6 +18,14 @@ public class PointHistory {
         this.createdAt = LocalDateTime.now();
     }
 
+    public PointHistory(Long id, Long userId, Long amount, PointTransactionType type, LocalDateTime createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.amount = amount;
+        this.type = type;
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Long getUserId() {
         return userId;
     }

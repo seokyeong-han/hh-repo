@@ -1,8 +1,9 @@
-package com.example.ecommerce_3week;
+package com.example.ecommerce_3week.service;
 
 import com.example.ecommerce_3week.domain.order.Order;
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.order.OrderRepository;
+import com.example.ecommerce_3week.domain.orderitem.OrderItemRepository;
 import com.example.ecommerce_3week.domain.product.Product;
 import com.example.ecommerce_3week.domain.user.User;
 import com.example.ecommerce_3week.dto.order.facade.OrderFacadeRequest;
@@ -21,13 +22,14 @@ import static org.mockito.Mockito.*;
 public class OrderServiceTest {
     private ProductService productService;
     private OrderRepository orderRepository;
+    private OrderItemRepository orderItemRepository;
     private OrderService orderService;
 
     @BeforeEach
     void setUp() {
         productService = mock(ProductService.class);
         orderRepository = mock(OrderRepository.class);
-        orderService = new OrderService(productService, orderRepository);
+        orderService = new OrderService(orderRepository, orderItemRepository );
     }
 
     @Test
@@ -45,7 +47,7 @@ public class OrderServiceTest {
         when(productService.getProductById(2L)).thenReturn(product2);
 
         // when
-        PreparedOrderItems prepared = orderService.prepareOrderItems(requests);
+        PreparedOrderItems prepared = productService.prepareOrderItems(requests);
 
         // then
         assertThat(prepared.getProducts()).hasSize(2); //상품 아이템 갯수 2개 인지 확인
@@ -65,7 +67,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("createOrder: 주문 생성 성공")
-    void createOrder_success() {
+    void createOrder_success () {
         // given
         User user = new User(1L, "testUser", 5000L);
         OrderItem item1 = new OrderItem(1L, 2, 1000L);
