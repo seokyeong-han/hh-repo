@@ -19,7 +19,7 @@ public class JpaPointHistoryRepositoryImpl implements PointHistoryRepository {
     }
 
     @Override
-    public List<PointHistory> findAllByUserId(Long userId) {
+    public List<PointHistory> findByUserId(Long userId) {
         // PointHistoryJpaEntity를 조회하고, 이를 PointHistory로 변환
         List<PointHistoryJpaEntity> entities = jpaRepository.findAllByUserId(userId);
         return entities.stream()
@@ -42,9 +42,11 @@ public class JpaPointHistoryRepositoryImpl implements PointHistoryRepository {
 
     private PointHistory toDomain(PointHistoryJpaEntity entity) {
         return new PointHistory(
+                entity.getId(),
                 entity.getUserId(),
                 entity.getAmount(),
-                entity.getType()
+                entity.getType(),
+                entity.getCreatedAt()
         );
     }
 
