@@ -1,10 +1,13 @@
 package com.example.ecommerce_3week.integration;
 
+import com.example.ecommerce_3week.common.enums.PointTransactionType;
 import com.example.ecommerce_3week.domain.order.Order;
 import com.example.ecommerce_3week.domain.order.OrderRepository;
+import com.example.ecommerce_3week.domain.orderhistory.OrderHistory;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistoryRepository;
 import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.orderitem.OrderItemRepository;
+import com.example.ecommerce_3week.domain.pointhistory.PointHistory;
 import com.example.ecommerce_3week.dto.order.facade.OrderFacadeRequest;
 import com.example.ecommerce_3week.domain.pointhistory.PointHistoryRepository;
 import com.example.ecommerce_3week.domain.product.Product;
@@ -16,7 +19,10 @@ import com.example.ecommerce_3week.dto.order.facade.PreparedOrderItems;
 import com.example.ecommerce_3week.facade.OrderFacade;
 import com.example.ecommerce_3week.infrastructure.order.OrderJpaEntity;
 import com.example.ecommerce_3week.service.order.OrderService;
+import com.example.ecommerce_3week.service.orderhistory.OrderHistoryService;
+import com.example.ecommerce_3week.service.pointhistory.PointHistoryService;
 import com.example.ecommerce_3week.service.product.ProductService;
+import com.example.ecommerce_3week.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,7 +61,7 @@ public class OrderIntegrationTest {
     }
 
     @Autowired
-    private OrderFacade orderFacade;
+    private UserService userService;
 
     @Autowired
     private ProductService productService;
@@ -79,8 +85,16 @@ public class OrderIntegrationTest {
     private PointHistoryRepository pointHistoryRepository;
 
     @Autowired
+    private OrderHistoryService orderHistoryService;
+
+    @Autowired
     private OrderHistoryRepository orderHistoryRepository;
 
+    @Autowired
+    private PointHistoryService pointHistoryService;
+
+    private User testUser;
+    private List<OrderFacadeRequest> itemRequests;
     @BeforeEach
     void setup() {
         // 테스트용 유저 및 상품 세팅
@@ -90,11 +104,66 @@ public class OrderIntegrationTest {
         pointHistoryRepository.deleteAll();
         orderHistoryRepository.deleteAll();
 
+        // 테스트용 유저 저장 및 ID 할당
+        testUser = new User("testuser", 60000L);
+        testUser = userRepository.save(testUser); // 저장된 결과로 다시 할당
+        // 테스트용 상품 주문 request 셋팅
+        Product savedProduct1 = productRepository.save(new Product(10000L, 10));
+        Product savedProduct2 = productRepository.save(new Product(5000L, 5));
+        itemRequests = List.of(
+                new OrderFacadeRequest(savedProduct1.getId(), 2),
+                new OrderFacadeRequest(savedProduct2.getId(), 3));
+
     }
+
 
     @Test
     @Transactional
     void 주문_파사드_테스트_성공() {
+        testUser = userService.findUserById(testUser.getId());
+        System.out.println("testUser :: 이름 = "+testUser.getUsername()+", 잔액 = "+testUser.getBalance());
+
+        //상품조회,재고차감,재고저장
+        PreparedOrderItems prepared = productService.prepareOrderItems(itemRequests);
+
+        // ✅ 값 확인
+        System.out.println("총 주문 금액: " + prepared.getTotalPrice());
+        System.out.println("=== 상품 목록 ===");
+        for (Product product : prepared.getProducts()) {
+            System.out.println("상품 ID: " + product.getId() + ", 재고: " + product.getStock());
+        }
+
+        //유저 잔액 차감, 저장
+        userService.deductBalance(testUser, prepared.getTotalPrice());
+        //주문생성, 주문 저장
+        Order order = orderService.createOrder(testUser, prepared.getOrderItems());
+        List<OrderItem> savedItems = orderItemRepository.findByOrderId(order.getId());
+
+        // ✅ 값 확인2
+        System.out.println("=== 주문 내역 ===");
+        System.out.println("주문 ID:"+order.getId()+", 유저 ID: "+order.getUserId()+", 생성일: "+order.getCreatedAt());
+
+        System.out.println("=== 주문 항목 목록 ===");
+        for (OrderItem item : savedItems) {
+            System.out.println("상품 ID: " + item.getProductId() + ", 수량: " + item.getQuantity() + ", 총액: " + item.getTotalPrice());
+        }
+
+        //주문 히스토리 저장
+        orderHistoryService.save(testUser.getId(), order.getId(), prepared.getOrderItems());
+        List<OrderHistory> orderHistories = orderHistoryRepository.findByOrderId(order.getId());
+        // ✅ 값 확인3
+        System.out.println("=== 주문 내역 ===");
+        for (OrderHistory item : orderHistories) {
+            System.out.println("history ID: "+item.getId()+", 주문 유저 ID: "+item.getUserId()+", 주문 ID: "+item.getOrderId()+", 상품 ID: "+item.getProductId()+" 구매수량: "+item.getQuantity()+", 구매 가격:"+item.getTotalPrice());
+        }
+        //포인트 히스토리 저장
+        pointHistoryService.useSave(new PointHistory(testUser.getId(), prepared.getTotalPrice(), PointTransactionType.USE));
+        List<PointHistory> pointHistories = pointHistoryRepository.findByUserId(testUser.getId());
+        // ✅ 값 확인4
+        System.out.println("=== 포인트 내역 ===");
+        for(PointHistory item : pointHistories) {
+            System.out.println("ID: "+item.getId()+", 타입: "+item.getType()+" 금액:"+item.getAmount());
+        }
 
     }
 
@@ -136,8 +205,8 @@ public class OrderIntegrationTest {
     @Transactional
     void 주문_서비스_풀어서_테스트_성공() {
         //test 유저, 상품 등록
-        User user = new User("testuser", 50000L);
-        userRepository.save(user);
+        User user = new User("testuser", 60000L);
+        User saveUser = userRepository.save(user);
 
         Product savedProduct1 = productRepository.save(new Product(10000L, 10));
         Product savedProduct2 = productRepository.save(new Product(5000L, 5));
@@ -177,10 +246,14 @@ public class OrderIntegrationTest {
         long totalPrice = preparedOrderItems.getTotalPrice(); // 주문 총액
         System.out.println("Total Price - " + totalPrice);
         //차감 하기
-        //userService.deductBalance(user, prepared.getTotalPrice()); 이거 하면 됨
-        
+        userService.deductBalance(saveUser, totalPrice); //이거 하면 됨
+
+        User user1 = userService.findUserById(saveUser.getId());
+        System.out.println("user1 == " + user1.getBalance());
+
+
         //orderService.createOrder(user, orderItems);
-        Order order = new Order(user.getId(), orderItems);
+        Order order = new Order(user1.getId(), orderItems);
         // order 저장
         Order saveOrder = orderRepository.save(order);
 
