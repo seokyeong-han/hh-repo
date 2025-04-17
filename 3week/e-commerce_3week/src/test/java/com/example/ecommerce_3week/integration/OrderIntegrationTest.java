@@ -34,6 +34,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
@@ -98,10 +99,44 @@ public class OrderIntegrationTest {
     }
 
     @Test
+    void 주문_중_재고롤백() {
+        // given
+        User user = new User("testuser", 50000L);
+        userRepository.save(user);
+
+        Product savedProduct1 = productRepository.save(new Product(10000L, 10));
+        Product savedProduct2 = productRepository.save(new Product(5000L, 5));
+
+        // 주문 요청 생성
+        List<OrderFacadeRequest> itemRequests = List.of(
+                new OrderFacadeRequest(savedProduct1.getId(), 2),
+                new OrderFacadeRequest(savedProduct2.getId(), 6) // 재고보다 많은 수량 주문
+        );
+
+        // when
+        assertThatThrownBy(() -> {
+            productService.prepareOrderItems(itemRequests); // 여기서 예외 발생해야 함
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("상품 재고가 부족합니다.");
+
+        // then - 재고가 롤백되었는지 확인
+        Product after = productRepository.findById(savedProduct2.getId()).orElseThrow();
+        assertThat(after.getStock()).isEqualTo(5); // 재고 원상복구
+
+    }
+
+    @Test
+    void 유저_잔액부족_재고_롤백() {
+        User user = new User("testuser", 50000L);
+        userRepository.save(user);
+
+    }
+
+    @Test
     @Transactional
     void 주문_서비스_풀어서_테스트_성공() {
         //test 유저, 상품 등록
-        User user = new User("testuser", 100L);
+        User user = new User("testuser", 50000L);
         userRepository.save(user);
 
         Product savedProduct1 = productRepository.save(new Product(10000L, 10));
@@ -138,6 +173,12 @@ public class OrderIntegrationTest {
         List<OrderItem> orderItems = preparedOrderItems.getOrderItems();
         assertThat(orderItems).hasSize(2);
 
+        //user 잔액 차감 및 검증 추가 --> 이거 해야함
+        long totalPrice = preparedOrderItems.getTotalPrice(); // 주문 총액
+        System.out.println("Total Price - " + totalPrice);
+        //차감 하기
+        //userService.deductBalance(user, prepared.getTotalPrice()); 이거 하면 됨
+        
         //orderService.createOrder(user, orderItems);
         Order order = new Order(user.getId(), orderItems);
         // order 저장
@@ -165,6 +206,8 @@ public class OrderIntegrationTest {
         assertThat(savedItems)
                 .extracting("productId")
                 .containsExactlyInAnyOrder(savedProduct1.getId(), savedProduct2.getId());
+
+
 
     }
 

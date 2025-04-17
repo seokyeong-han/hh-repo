@@ -39,14 +39,14 @@ public class OrderFacade {
         //상품조회,재고차감,재고저장
         PreparedOrderItems prepared = productService.prepareOrderItems(requestItems);
 
+        //유저 잔액 차감, 저장
+        userService.deductBalance(user, prepared.getTotalPrice());
+
         //주문생성, 주문 저장
         Order order = orderService.createOrder(user, prepared.getOrderItems());
 
         //주문 히스토리 저장
         orderHistoryService.save(user, prepared.getOrderItems());
-
-        //유저 잔액 저장
-        userService.save(user);
 
         //포인트 히스토리 저장
         pointHistoryService.useSave(new PointHistory(user.getId(), order.getTotalPrice(), PointTransactionType.USE));
