@@ -1,6 +1,7 @@
 package com.example.ecommerce_3week.dto.order.controller;
 
 import com.example.ecommerce_3week.dto.order.facade.OrderFacadeRequest;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ public class OrderRequest {
 
     @Getter
     @Setter
+    @AllArgsConstructor //생성자 추가
     public static class OrderItemRequest {
         private Long productId;
         private int quantity;

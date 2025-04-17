@@ -61,6 +61,9 @@ public class OrderIntegrationTest {
     }
 
     @Autowired
+    private OrderFacade orderFacade;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -118,6 +121,50 @@ public class OrderIntegrationTest {
 
     }
 
+    @Test
+    void 주문_중_재고롤백() {
+        // given
+        Product savedProduct1 = productRepository.save(new Product(10000L, 10));
+        Product savedProduct2 = productRepository.save(new Product(5000L, 5));
+
+        // 주문 요청 생성
+        List<OrderFacadeRequest> itemRequests = List.of(
+                new OrderFacadeRequest(savedProduct1.getId(), 2),
+                new OrderFacadeRequest(savedProduct2.getId(), 6) // 재고보다 많은 수량 주문
+        );
+
+        // when
+        assertThatThrownBy(() -> {
+            productService.prepareOrderItems(itemRequests); // 여기서 예외 발생해야 함
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("상품 재고가 부족합니다.");
+
+        // then - 재고가 롤백되었는지 확인
+        Product after = productRepository.findById(savedProduct2.getId()).orElseThrow();
+        assertThat(after.getStock()).isEqualTo(5); // 재고 원상복구
+
+    }
+
+    @Test
+    void 유저_잔액부족_재고_롤백() {
+        List<OrderRequest.OrderItemRequest>
+                itemRequests = List.of(
+                new OrderRequest.OrderItemRequest(savedProduct1.getId(), 7));
+
+        OrderRequest orderRequest = new OrderRequest(testUser.getId(), itemRequests);
+
+        // when
+        assertThatThrownBy(() -> {
+            orderFacade.placeOrder(orderRequest); // 잔액 부족으로 예외 발생해야 함
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("잔액이 부족합니다");
+
+        // then - 재고가 롤백되었는지 확인
+        Product afterProduct = productRepository.findById(savedProduct1.getId()).orElseThrow();
+        assertThat(afterProduct.getStock()).isEqualTo(10); // 재고 원상복구
+
+    }
+
 
     @Test
     @Transactional
@@ -166,39 +213,6 @@ public class OrderIntegrationTest {
         for(PointHistory item : pointHistories) {
             System.out.println("ID: "+item.getId()+", 타입: "+item.getType()+" 금액:"+item.getAmount());
         }
-
-    }
-
-    @Test
-    void 주문_중_재고롤백() {
-        // given
-        Product savedProduct1 = productRepository.save(new Product(10000L, 10));
-        Product savedProduct2 = productRepository.save(new Product(5000L, 5));
-
-        // 주문 요청 생성
-        List<OrderFacadeRequest> itemRequests = List.of(
-                new OrderFacadeRequest(savedProduct1.getId(), 2),
-                new OrderFacadeRequest(savedProduct2.getId(), 6) // 재고보다 많은 수량 주문
-        );
-
-        // when
-        assertThatThrownBy(() -> {
-            productService.prepareOrderItems(itemRequests); // 여기서 예외 발생해야 함
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("상품 재고가 부족합니다.");
-
-        // then - 재고가 롤백되었는지 확인
-        Product after = productRepository.findById(savedProduct2.getId()).orElseThrow();
-        assertThat(after.getStock()).isEqualTo(5); // 재고 원상복구
-
-    }
-
-    @Test
-    void 유저_잔액부족_재고_롤백() {
-        itemRequests = List.of(
-                new OrderFacadeRequest(savedProduct1.getId(), 7));
-
-
 
     }
 
