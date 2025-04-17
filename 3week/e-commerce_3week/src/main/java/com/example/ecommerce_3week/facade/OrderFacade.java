@@ -46,10 +46,10 @@ public class OrderFacade {
         Order order = orderService.createOrder(user, prepared.getOrderItems());
 
         //주문 히스토리 저장
-        orderHistoryService.save(user, prepared.getOrderItems());
+        orderHistoryService.save(user.getId(), order.getId(), prepared.getOrderItems());
 
         //포인트 히스토리 저장
-        pointHistoryService.useSave(new PointHistory(user.getId(), order.getTotalPrice(), PointTransactionType.USE));
+        pointHistoryService.useSave(new PointHistory(user.getId(), prepared.getTotalPrice(), PointTransactionType.USE));
 
     }
 }

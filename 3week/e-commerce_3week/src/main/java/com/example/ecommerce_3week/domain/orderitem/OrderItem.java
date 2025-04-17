@@ -23,7 +23,6 @@ public class OrderItem {
     }
 
     public static OrderItem toDomain(OrderItemJpaEntity entity) {
-        System.out.println("여기 들어와");
         Order order = Order.toDomain(entity.getOrder()); // ← 이 메서드 필요
         return new OrderItem(
                 entity.getProductId(),

@@ -69,7 +69,7 @@ public class UserChargeIntegrationTest {
         assertThat(updatedUser.getBalance()).isEqualTo(150L);
 
         // 충전 히스토리 존재 여부 확인
-        List<PointHistory> histories = pointHistoryRepository.findAllByUserId(savedUser.getId());
+        List<PointHistory> histories = pointHistoryRepository.findByUserId(savedUser.getId());
         assertThat(histories).isNotEmpty();
 
         PointHistory history = histories.get(0);

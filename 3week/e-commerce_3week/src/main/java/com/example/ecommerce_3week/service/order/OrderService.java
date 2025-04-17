@@ -27,7 +27,7 @@ public class OrderService {
         //order item 저장
         orderItemRepository.saveAll(items, saveOrder.getId());
 
-        return order;
+        return saveOrder;
     }
 
 }
