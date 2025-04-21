@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface OrderHistoryRepository {
     void saveAll(List<OrderHistory> histories);
+    void deleteAll();
+    List<OrderHistory> findByOrderId(Long id);
 }

@@ -24,6 +24,12 @@ public class UserService {
         user.charge(amount); // 실제 변경은 엔티티가 함
     }
 
+    //차감
+    public void deductBalance(User user, Long amount) {
+        user.deduct(amount); // User 객체에서 잔액 차감
+        userRepository.save(user); // 차감된 잔액을 저장
+    }
+
     //저장
     public User save(User user){
         return userRepository.save(user);

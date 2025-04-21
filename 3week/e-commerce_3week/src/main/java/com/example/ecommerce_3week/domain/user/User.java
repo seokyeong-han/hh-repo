@@ -1,5 +1,7 @@
 package com.example.ecommerce_3week.domain.user;
 
+import com.example.ecommerce_3week.infrastructure.user.UserJpaEntity;
+
 import java.time.LocalDateTime;
 
 public class User {
@@ -13,6 +15,11 @@ public class User {
 
     public User(Long id, String username, Long balance) {
         this.id = id;
+        this.username = username;
+        this.balance = balance != null ? balance : 0L;
+    }
+
+    public User(String username, Long balance) { //id는 자동 생성자라 넣을 필요 없음
         this.username = username;
         this.balance = balance != null ? balance : 0L;
     }
@@ -35,6 +42,10 @@ public class User {
         if ((this.balance != null ? this.balance : 0L) + amount > 1_000_000L) {
             throw new IllegalArgumentException("최대금액 이상 충전 하실 수 없습니다.");
         }
+    }
+
+    public static User toDomain(UserJpaEntity entity) {
+        return new User(entity.getId(), entity.getUsername(), entity.getBalance());
     }
 
     public Long getId() {

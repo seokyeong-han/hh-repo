@@ -2,11 +2,14 @@ package com.example.ecommerce_3week.infrastructure.order;
 
 import com.example.ecommerce_3week.domain.order.Order;
 import com.example.ecommerce_3week.domain.order.OrderRepository;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,16 +17,20 @@ public class JpaOrderRepositoryImpl implements OrderRepository {
     private final OrderJpaRepository jpaRepository;
 
     @Override
-    public void save(Order order) {
-        jpaRepository.save(toEntity(order));
+    public Optional<Order> findById(Long id) {
+        return jpaRepository.findById(id)
+                .map(Order::toDomain);
     }
 
-    // JPA Entity → 도메인 모델
-    private Order toDomain(OrderJpaEntity entity) {
-        return new Order(
-                entity.getUserId(),
-                List.of() // 아이템은 따로 조회하거나 추가 매핑 로직 구현 가능
-        );
+    @Override
+    public Order save(Order order) {
+        OrderJpaEntity saved = jpaRepository.save(toEntity(order));
+        return Order.toDomain(saved);
+    }
+
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
     }
 
     // 도메인 → JPA Entity

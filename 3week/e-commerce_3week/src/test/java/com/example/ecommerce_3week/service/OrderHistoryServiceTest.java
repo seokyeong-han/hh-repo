@@ -1,19 +1,16 @@
-package com.example.ecommerce_3week;
+package com.example.ecommerce_3week.service;
 
-import com.example.ecommerce_3week.domain.order.OrderItem;
+import com.example.ecommerce_3week.domain.order.Order;
+import com.example.ecommerce_3week.domain.orderitem.OrderItem;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistory;
 import com.example.ecommerce_3week.domain.orderhistory.OrderHistoryRepository;
-import com.example.ecommerce_3week.domain.pointhistory.PointHistoryRepository;
 import com.example.ecommerce_3week.domain.user.User;
 import com.example.ecommerce_3week.service.orderhistory.OrderHistoryService;
-import com.example.ecommerce_3week.service.pointhistory.PointHistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -45,12 +42,14 @@ public class OrderHistoryServiceTest {
     void saveOrderHistory_success() {
         // given
         User user = new User(1L, "testUser",10_000L);
-        OrderItem item1 = new OrderItem(1L, 2, 1000L); // 총 2000
-        OrderItem item2 = new OrderItem(2L, 1, 3000L); // 총 3000
+
+        OrderItem item1 = new OrderItem(1L,2, 1000L); // 총 2000
+        OrderItem item2 = new OrderItem(2L,1, 3000L); // 총 3000
         List<OrderItem> items = List.of(item1, item2);
+        Order order = new Order(user.getId(), items);
 
         // when
-        orderHistoryService.save(user, items);
+        orderHistoryService.save(user.getId(), order.getId(), items);
 
         // then
         // List<OrderHistory> 타입의 인자를 캡처할 준비를 함
