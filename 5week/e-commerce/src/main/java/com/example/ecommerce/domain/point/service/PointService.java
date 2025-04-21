@@ -1,7 +1,6 @@
 package com.example.ecommerce.domain.point.service;
 
 import com.example.ecommerce.api.point.dto.PointCommand;
-import com.example.ecommerce.api.point.dto.pointChargeRequest;
 import com.example.ecommerce.domain.point.model.PointHistory;
 import com.example.ecommerce.domain.point.repository.PointHistoryRepository;
 import com.example.ecommerce.domain.point.repository.PointRepository;

@@ -12,7 +12,7 @@ public class PointCommand {
         this.amount = amount;
     }
 
-    public static PointCommand from(pointChargeRequest request) {
+    public static PointCommand from(PointChargeRequest request) {
         return new PointCommand(request.getUserId(), request.getAmount());
     }
 

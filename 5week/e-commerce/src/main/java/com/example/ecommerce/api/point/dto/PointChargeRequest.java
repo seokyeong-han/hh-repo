@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class pointChargeRequest {
+public class PointChargeRequest {
     private Long userId;
     private Long amount;
 

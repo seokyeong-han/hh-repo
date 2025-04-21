@@ -1,6 +1,6 @@
 package com.example.ecommerce.api.point.controller;
 
-import com.example.ecommerce.api.point.dto.pointChargeRequest;
+import com.example.ecommerce.api.point.dto.PointChargeRequest;
 import com.example.ecommerce.api.point.facade.PointFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class PointController {
     private final PointFacade pointFacade;
 
     @PostMapping("/charge")
-    public ResponseEntity<Void> chargePoint(@RequestBody pointChargeRequest request) {
+    public ResponseEntity<Void> chargePoint(@RequestBody PointChargeRequest request) {
         pointFacade.chargePoint(request);
         return ResponseEntity.ok().build();
     }
