@@ -17,13 +17,11 @@ public class UserCoupon {
         this.assignedAt = assignedAt;
     }
 
-    public void use() {
-        if (used) throw new IllegalStateException("이미 사용한 쿠폰입니다.");
+    public void tryUse() {
+        if (used) {
+            throw new IllegalStateException("이미 사용한 쿠폰입니다.");
+        }
         this.used = true;
-    }
-
-    public boolean isUsed() {
-        return used;
     }
 
     // Getter
@@ -35,6 +33,9 @@ public class UserCoupon {
     }
     public Long getCouponId() {
         return couponId;
+    }
+    public boolean isUsed() {
+        return used;
     }
     public LocalDateTime getAssignedAt() {
         return assignedAt;
