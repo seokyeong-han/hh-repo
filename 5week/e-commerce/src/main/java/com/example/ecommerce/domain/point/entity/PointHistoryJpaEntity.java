@@ -21,26 +21,42 @@ public class PointHistoryJpaEntity {
 
     private Long amount;
 
+    private Long balance;
+
     @Enumerated(EnumType.STRING)
     private PointTransactionType type;
 
     private LocalDateTime createdAt;
 
     // JPA 엔티티 생성자
-    public PointHistoryJpaEntity(Long userId, Long amount, PointTransactionType type, LocalDateTime createdAt) {
+    public PointHistoryJpaEntity(Long userId, Long amount, Long balance, PointTransactionType type, LocalDateTime createdAt) {
         this.userId = userId;
         this.amount = amount;
+        this.balance = balance;
         this.type = type;
         this.createdAt = createdAt;
     }
 
-    // 도메인 객체인 PointHistory를 JPA 엔티티로 변환하는 메서드
+    // 도메인 → JPA
     public static PointHistoryJpaEntity fromDomain(PointHistory domain) {
         return new PointHistoryJpaEntity(
                 domain.getUserId(),
                 domain.getAmount(),
+                domain.getBalance(),
                 domain.getType(),
                 domain.getCreatedAt()
+        );
+    }
+
+    // JPA → 도메인
+    public PointHistory toDomain() {
+        return new PointHistory(
+                this.id,
+                this.userId,
+                this.amount,
+                this.balance,
+                this.type,
+                this.createdAt
         );
     }
 }

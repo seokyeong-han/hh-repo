@@ -17,8 +17,6 @@ public class PointFacade {
 
     //포인트 충전
     public void chargePoint (@RequestBody PointChargeRequest request) {
-        //유저조회
-        User user = userService.findById(request.getUserId());
         //포인트충전, 포인트 히스토리 저장
         pointService.chargePoint(PointCommand.from(request));
     }

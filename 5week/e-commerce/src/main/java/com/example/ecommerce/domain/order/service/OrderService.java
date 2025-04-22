@@ -44,38 +44,7 @@ public class OrderService {
         Map<Long, OrderCommand> commandMap = itemRequests.stream()
                 .collect(Collectors.toMap(OrderCommand::getProductId, c -> c));
 
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (Product product : products) {
-            OrderCommand command = commandMap.get(product.getId());
-            int quantity = command.getQuantity();
-            Long couponId = command.getCouponId();
-
-            Long pricePerItem = product.getPrice(); //상품 1개당 가격
-            Long totalOriginalPrice = pricePerItem * quantity;   // 할인 전 총액
-            Long discount = 0L;
-
-            if (couponId != null) {
-                discount = couponService.getDiscountAmount(couponId, pricePerItem); // 한 개당만 할인
-            }
-            // 실제 결제 총액 = 할인된 1개 가격 + 나머지는 원가
-            Long finalTotalPrice = (pricePerItem * quantity) - discount;
-            Long finalPricePerItem = finalTotalPrice / quantity;
-
-            OrderItem orderItem = new OrderItem(
-                    product.getId(),
-                    quantity,
-                    pricePerItem,
-                    totalOriginalPrice,
-                    discount,
-                    finalPricePerItem,
-                    finalTotalPrice,
-                    couponId
-            );
-
-            orderItems.add(orderItem);
-            //여기에 save 추가
-        }
-
+       //일단쿠폰 빼고
         return null;
     }
 

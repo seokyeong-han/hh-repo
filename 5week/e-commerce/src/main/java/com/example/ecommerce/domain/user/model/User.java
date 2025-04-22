@@ -11,17 +11,13 @@ public class User {
     private Long id;
     private String username;
     private Long balance;
-    private LocalDateTime createdAt;
+    private Long version;
 
-    public User(Long id, String username, Long balance) {
+    public User(Long id, String username, Long balance, Long version) { //전체 생성자
         this.id = id;
         this.username = username;
         this.balance = balance != null ? balance : 0L;
-    }
-
-    public User(String username, Long balance) { //id는 자동 생성자라 넣을 필요 없음
-        this.username = username;
-        this.balance = balance != null ? balance : 0L;
+        this.version = version != null ? version : 0L; // 또는 null 허용
     }
 
     public void deduct(Long amount) {
@@ -45,10 +41,6 @@ public class User {
         }
     }
 
-    public static User toDomain(UserJpaEntity entity) {
-        return new User(entity.getId(), entity.getUsername(), entity.getBalance());
-    }
-
     //getter
     public Long getId() {
         return id;
@@ -59,4 +51,5 @@ public class User {
     public Long getBalance() {
         return balance;
     }
+    public Long getVersion() { return version;}
 }

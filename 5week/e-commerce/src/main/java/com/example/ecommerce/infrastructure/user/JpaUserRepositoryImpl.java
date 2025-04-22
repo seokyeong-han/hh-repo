@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.user;
 
+import com.example.ecommerce.domain.user.entity.UserJpaEntity;
 import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,13 @@ public class JpaUserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findById(Long id){
         return jpaRepository.findById(id)
-                .map(User::toDomain);
+                .map(UserJpaEntity::toDomain);
+    }
+
+    @Override
+    public User save(User user) {
+        UserJpaEntity saved = jpaRepository.save(UserJpaEntity.fromDomain(user));
+        return saved.toDomain();
     }
 
 
