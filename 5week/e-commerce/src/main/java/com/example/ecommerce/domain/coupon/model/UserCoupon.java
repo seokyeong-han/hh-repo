@@ -17,13 +17,6 @@ public class UserCoupon {
         this.assignedAt = assignedAt;
     }
 
-    public void tryUse() {
-        if (used) {
-            throw new IllegalStateException("이미 사용한 쿠폰입니다.");
-        }
-        this.used = true;
-    }
-
     // Getter
     public Long getId() {
         return id;

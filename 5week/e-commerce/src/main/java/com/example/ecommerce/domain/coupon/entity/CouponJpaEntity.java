@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Table(name = "coupon")
 public class CouponJpaEntity {
     @Id
     @GeneratedValue
@@ -31,9 +32,6 @@ public class CouponJpaEntity {
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    @Version
-    private Long version; // 낙관적 락
 
     public CouponJpaEntity() {} //기본 생성자
 

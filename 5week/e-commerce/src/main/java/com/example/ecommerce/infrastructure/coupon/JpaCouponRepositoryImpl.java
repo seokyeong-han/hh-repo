@@ -34,6 +34,13 @@ public class JpaCouponRepositoryImpl implements CouponRepository {
         return saved.toDomain();
     }
 
+    //비관적 락 조회
+    @Override
+    public Optional<Coupon> findWithLockById(Long id) {
+        return jpaRepository.findWithLockById(id)
+                .map(CouponJpaEntity::toDomain);
+    }
+
 
 
 }

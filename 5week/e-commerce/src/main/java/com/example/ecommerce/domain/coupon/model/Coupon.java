@@ -38,7 +38,10 @@ public class Coupon {
 
     // 쿠폰 발급
     public void assignToUser() {
-        if (!hasRemainingQuantity()) {
+//        if (!hasRemainingQuantity()) {
+//            throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
+//        }
+        if (issuedCount >= totalCount) {
             throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
         }
         issuedCount++; // 도메인 객체 자체에서 상태 변화
