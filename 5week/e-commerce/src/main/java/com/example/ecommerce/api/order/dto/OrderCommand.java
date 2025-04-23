@@ -6,12 +6,11 @@ import lombok.Getter;
 public class OrderCommand {
     private Long productId;
     private int quantity;
-    private final Long couponId;
 
-    public OrderCommand(Long productId, int quantity, Long couponId) {
+    public OrderCommand(Long productId, int quantity) {
         this.productId = productId;
         this.quantity = quantity;
-        this.couponId = couponId; //상품별 쿠폰 1개
+
     }
 
 }

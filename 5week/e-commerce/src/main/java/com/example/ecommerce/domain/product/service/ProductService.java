@@ -1,11 +1,14 @@
 package com.example.ecommerce.domain.product.service;
 
 import com.example.ecommerce.api.order.dto.OrderCommand;
+import com.example.ecommerce.api.product.dto.PreparedOrderItems;
+import com.example.ecommerce.domain.order.model.OrderItem;
 import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,16 +36,24 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    //재고 차감
-    public List<Product> deductStocks(List<OrderCommand> itemRequests) {
-        List<Product> products = new ArrayList<>();
-        for (OrderCommand request : itemRequests) {
-            Product product = findById(request.getProductId());
-            product.deductStock(request.getQuantity());
-            products.add(product);
-            save(product); //재고 저장
+    public PreparedOrderItems prepareOrderItems(List<OrderCommand> itemRequests) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        for (OrderCommand command : itemRequests) {
+            Product product = findById(command.getProductId());
+            //재고 차감
+            product.deductStock(command.getQuantity());
+            // 총 가격 계산
+            long pricePerItem = product.getPrice();
+            long totalPrice = pricePerItem * command.getQuantity();
+            //주문 아이템 생성
+            OrderItem item = new OrderItem(
+                    null, null, product.getId(), command.getQuantity(),
+                    totalPrice, pricePerItem, LocalDateTime.now());
+            orderItems.add(item);
+            // 재고 저장
+            save(product);
         }
-        return products; //구매 상품 return
+        return new PreparedOrderItems(orderItems);
     }
 
 
