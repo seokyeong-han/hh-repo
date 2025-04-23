@@ -55,6 +55,8 @@ public class CouponService {
         UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
         userCouponRepository.save(userCoupon);
 
+        //히스토리 기능은 추후 개발 예정
+
     }
 
 
