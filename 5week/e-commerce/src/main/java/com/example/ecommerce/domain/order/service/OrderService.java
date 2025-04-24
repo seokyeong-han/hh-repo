@@ -4,7 +4,6 @@ import com.example.ecommerce.api.product.dto.PreparedOrderItems;
 import com.example.ecommerce.domain.order.model.Order;
 import com.example.ecommerce.domain.order.repository.OrderItemRepository;
 import com.example.ecommerce.domain.order.repository.OrderRepository;
-import com.example.ecommerce.domain.product.repository.ProductRepository;
 import com.example.ecommerce.domain.product.service.ProductService;
 import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.domain.user.service.UserService;
@@ -31,7 +30,7 @@ public class OrderService {
         try {
             // 유저 조회 + 잔액 차감 (낙관적 락 포함)
             User user = userService.deductBalance(userId, prepared.getTotalPrice());
-            Order order = new Order(user.getId(), prepared.getOrderItems()); //total가격 저장
+            Order order = new Order(null, user.getId(), prepared.getOrderItems()); //total가격 저장
             // order 저장
             Order saveOrder = orderRepository.save(order);
             //order item 저장
