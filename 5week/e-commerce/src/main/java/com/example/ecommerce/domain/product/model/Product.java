@@ -21,6 +21,10 @@ public class Product {
         }
         this.stock -= quantity;
     }
+    //재고롤백
+    public void restoreStock(int quantity) {
+        this.stock += quantity;
+    }
 
     // 정적 팩토리 메서드 (JPA Entity → Domain)
     public static Product toDomain(ProductJpaEntity entity) {

@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.product;
 
+import com.example.ecommerce.domain.coupon.entity.CouponJpaEntity;
 import com.example.ecommerce.domain.product.entity.ProductJpaEntity;
 import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
@@ -25,6 +26,13 @@ public class JpaProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> findById(Long id) {
         return jpaRepository.findById(id)
+                .map(Product::toDomain);
+    }
+
+    //비관적 락 조회
+    @Override
+    public Optional<Product> findWithPessimisticLockById(Long id) {
+        return jpaRepository.findWithPessimisticLockById(id)
                 .map(Product::toDomain);
     }
 

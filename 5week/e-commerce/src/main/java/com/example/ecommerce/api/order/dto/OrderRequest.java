@@ -12,6 +12,7 @@ public class OrderRequest {
     private Long userId;
     private List<OrderItemRequest> items;
 
+
     @Getter
     @Setter
     @AllArgsConstructor //생성자 추가
