@@ -4,6 +4,7 @@ import com.example.ecommerce.domain.product.entity.ProductJpaEntity;
 
 public class Product {
     private Long id;
+    //아 이름 안만들었다 *이름 만들기
     private Long price;
     private Integer stock;
 

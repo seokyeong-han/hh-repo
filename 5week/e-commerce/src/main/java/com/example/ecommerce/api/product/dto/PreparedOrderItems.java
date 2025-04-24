@@ -11,12 +11,6 @@ public class PreparedOrderItems {
         this.orderItems = orderItems;
     }
 
-    private long calculateTotalPrice(List<OrderItem> items) {
-        return items.stream()
-                .mapToLong(OrderItem::getTotalPrice)
-                .sum();
-    }
-
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
