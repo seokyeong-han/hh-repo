@@ -28,9 +28,9 @@
 
     
 URL 
-- [포인트 충전 동싱성 이슈 테스트 ](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/pointChargeTest.java)
-- [쿠폰 선착순 발급 동시성 이슈 테스트](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/CouponIssueIntegrationTest.java)
-- [주문, 재고차감 동시성  이슈 테스트](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/OrderIntergrationTest.java)
+- 코드 : [포인트 충전 동싱성 이슈 테스트 ](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/pointChargeTest.java),    커밋 : [2ed42ed](https://github.com/seokyeong-han/hh-repo/commit/2ed42edec6ec572b1073a75edba84bff20c9fc9a)
+- 코드 : [쿠폰 선착순 발급 동시성 이슈 테스트](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/CouponIssueIntegrationTest.java), 커밋 : [ff89172](https://github.com/seokyeong-han/hh-repo/commit/ff89172784e9226104f3cc043b1798d73e264e99)
+- 코드 : [주문, 재고차감 동시성  이슈 테스트](https://github.com/seokyeong-han/hh-repo/blob/5week/5week/e-commerce/src/test/java/com/example/ecommerce/integration/OrderIntergrationTest.java),  커밋 : [264d840](https://github.com/seokyeong-han/hh-repo/commit/264d840291d4b6c39328ea953522d0ae62d63e41)
 
 
 **동시성 이슈 보고서**
