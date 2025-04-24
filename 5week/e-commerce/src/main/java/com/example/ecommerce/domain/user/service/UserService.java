@@ -7,9 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor //@Autowired 안하고 private로 주입하려면 생성자가 필요한데 스프링 어노테이션으로 자동생성
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public User findById(Long id) {
         return userRepository.findById(id)

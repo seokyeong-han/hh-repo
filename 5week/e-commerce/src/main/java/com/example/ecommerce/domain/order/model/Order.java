@@ -19,7 +19,8 @@ public class Order {
         this.items = List.of(); // 또는 빈 리스트로 초기화 (필요 시 아이템도 따로 세팅)
     }
 
-    public Order(Long userId, List<OrderItem> items) {
+    public Order(Long id, Long userId, List<OrderItem> items) {
+        this.id = id;
         this.userId = userId;
         this.items = items;
         this.totalPrice = calculateTotalPrice(items);

@@ -23,7 +23,7 @@ public class OrderService {
     public void placeOrder(Long userId, PreparedOrderItems prepared){
         // 유저 조회 + 잔액 차감 (낙관적 락 포함)
         User user = userService.deductBalance(userId, prepared.getTotalPrice());
-        Order order = new Order(user.getId(), prepared.getOrderItems()); //total가격 저장
+        Order order = new Order(null,user.getId(), prepared.getOrderItems()); //total가격 저장
         // order 저장
         Order saveOrder = orderRepository.save(order);
         //order item 저장
