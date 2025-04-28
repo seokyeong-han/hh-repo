@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.point.service;
 
+import com.example.ecommerce.global.annotation.RedisLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.retry.annotation.Backoff;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +27,14 @@ public class PointService {
     private final UserRepository userRepository;
     private final PointHistoryRepository pointHistoryRepository;
 
+    @RedisLock(key = "'lock:user:' + #command.userId", leaseTime = 10, timeUnit = TimeUnit.SECONDS)
     @Retryable( //낙관적 락
             value = { OptimisticLockingFailureException.class },
-            maxAttempts = 10, //실패시 재시도 횟수
-            backoff = @Backoff(delay = 100) // ms 단위
+            maxAttempts = 5, //실패시 재시도 횟수
+            backoff = @Backoff(delay = 50) // ms 단위
     )
     @Transactional
-    public void chargePoint (@RequestBody PointCommand command) {
+    public void chargePoint (PointCommand command) {
         // 재시도 되는지 확인용 로그
         // log.info("🔥 chargePoint called for userId={}, amount={}", command.getUserId(), command.getAmount());
 

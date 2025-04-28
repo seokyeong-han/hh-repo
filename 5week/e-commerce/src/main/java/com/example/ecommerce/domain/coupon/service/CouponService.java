@@ -17,7 +17,6 @@ import java.sql.SQLTransientConnectionException;
 import java.sql.SQLTransientException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CouponService {
