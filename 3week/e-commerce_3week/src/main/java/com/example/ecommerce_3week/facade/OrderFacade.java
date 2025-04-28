@@ -40,8 +40,8 @@ public class OrderFacade {
         PreparedOrderItems prepared = productService.prepareOrderItems(requestItems);
 
         //유저 잔액 차감, 저장
-        userService.deductBalance(user, prepared.getTotalPrice());
-
+        userService.deductBalance(user, prepared.getTotalPrice()); //아이디랑 총액 넘기기, 여기서 유저 조회 합치기
+        //User user = 리턴하기
         //주문생성, 주문 저장
         Order order = orderService.createOrder(user, prepared.getOrderItems());
 
