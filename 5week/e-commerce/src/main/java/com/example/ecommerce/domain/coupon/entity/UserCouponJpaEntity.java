@@ -1,13 +1,15 @@
 package com.example.ecommerce.domain.coupon.entity;
 
 import com.example.ecommerce.domain.coupon.model.UserCoupon;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "user_coupon",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"userId", "couponId"})
+        })
 public class UserCouponJpaEntity {
     @Id
     @GeneratedValue

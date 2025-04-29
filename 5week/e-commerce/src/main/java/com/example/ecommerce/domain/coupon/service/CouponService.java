@@ -4,10 +4,12 @@ import com.example.ecommerce.domain.coupon.model.Coupon;
 import com.example.ecommerce.domain.coupon.model.UserCoupon;
 import com.example.ecommerce.domain.coupon.repository.CouponRepository;
 import com.example.ecommerce.domain.coupon.repository.UserCouponRepository;
+import com.example.ecommerce.global.annotation.RedisLock;
 import jakarta.persistence.PessimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.sql.SQLTransientConnectionException;
 import java.sql.SQLTransientException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class CouponService {
@@ -41,37 +44,49 @@ public class CouponService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
     }
 
-    @Retryable( //비관적 락을 걸어 쿠폰 조회를 막았지만 15명 시도중 다 성공하지 못해 재시도 로직을 구현
+   @RedisLock(key = "'lock:coupon:' + #couponId"
+            , waitTime = 10
+            , leaseTime = 7
+            , timeUnit = TimeUnit.SECONDS
+            , retry = true
+            , retryCount = 5
+            , retryDelay =  100)
+    /*@Retryable( //비관적 락을 걸어 쿠폰 조회를 막았지만 15명 시도중 다 성공하지 못해 재시도 로직을 구현
             value = {
                     PessimisticLockException.class
                     ,CannotAcquireLockException.class
                     ,SQLTransientConnectionException.class // 커넥션 풀 부족 시
                     ,SQLTransientException.class            // DB 락 타임아웃 대응
             },
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 150)
-    )
+            backoff = @Backoff(delay = 50)
+    )*/
     @Transactional
     public void assignCouponToUser(Long couponId, Long userId) {
         log.info("🟡 시도 - userId={}, couponId={}", userId, couponId);
 
         // 유저가 이 쿠폰을 발급받은 적 있는지 확인
+        /*
+        user coupon entity에 유니크키를 userid, couponid로 걸어놔 검색 필요없음
         userCouponRepository.findByUserIdAndCouponId(userId, couponId)
                 .ifPresent(userCoupon -> {throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.");
-                });
+                });*/
 
         //쿠폰 재고 확인 및 발급 처리
         //Coupon coupon = couponRepository.findById(couponId)
         Coupon coupon = couponRepository.findWithLockById(couponId) //비관적 락으로 쿠폰 조회
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
 
-        coupon.assignToUser();
-        couponRepository.save(coupon);
+       coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
+       couponRepository.save(coupon);
 
-        //유저 쿠폰 발급 (used = false)
-        UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
-        userCouponRepository.save(userCoupon);
-
+        try {
+            //유저 쿠폰 발급 (used = false)
+            UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
+            userCouponRepository.save(userCoupon);
+        }catch (DataIntegrityViolationException e){
+            // DB 유니크 제약 위반: 이미 발급된 경우
+            throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.", e);
+        }
         //히스토리 기능은 추후 개발 예정
 
     }

@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,12 +49,21 @@ public class CouponIssueIntegrationTest {
             .withUsername("testuser")
             .withPassword("testpass");
 
+    @Container
+    static GenericContainer<?> redis = new GenericContainer<>("redis:7.2.4")
+            .withExposedPorts(6379); // Redis 기본 포트 6379
+
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         mysql.start(); // 컨테이너 먼저 시작
+        redis.start(); // Redis 컨테이너 시작
+
         registry.add("spring.datasource.url", mysql::getJdbcUrl);
         registry.add("spring.datasource.username", mysql::getUsername);
         registry.add("spring.datasource.password", mysql::getPassword);
+
+        registry.add("spring.data.redis.host", () -> redis.getHost());
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
     }
 
     private User user;
@@ -76,6 +87,8 @@ public class CouponIssueIntegrationTest {
     @Autowired
     private CouponService couponService;
 
+
+
     @Test
     @DisplayName("선착순 쿠폰 발급 - 동시에 여러 유저가 요청해도 최대 수량까지만 발급된다.")
     void assignCoupon_concurrent_withLock() throws Exception {
@@ -87,11 +100,12 @@ public class CouponIssueIntegrationTest {
         int threadCount = 15;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
-        List<Long> successList = Collections.synchronizedList(new ArrayList<>());
+
+        List<Future<Boolean>> futures = new ArrayList<>();  // ✅ Future<Boolean> 리스트
 
         for (int i = 0; i < threadCount; i++) {
             int userIndex = i;
-            executorService.submit(() -> {
+            Future<Boolean> future = executorService.submit(() -> {
                 try {
                     // 유저 생성 및 저장
                     User user = new User(null, "user" + userIndex, 0L, null);
@@ -100,37 +114,38 @@ public class CouponIssueIntegrationTest {
                     // 쿠폰 발급 시도
                     try {
                         couponService.assignCouponToUser(testCoupon.getId(), user.getId());
-                        successList.add(user.getId()); // 발급 성공한 유저만 기록
+                        return true;  // 성공
                     } catch (Exception e) {
-                        // 발급 실패는 무시
+                        return false; // 실패
                     }
 
                 } finally {
                     latch.countDown();
                 }
             });
+            futures.add(future); // ✅ Future 모으기
         }
 
         latch.await();
+        Thread.sleep(1000);  // 🔥 RedisLock 트랜잭션 끝날 시간 확보
+        // ✅ Future 결과를 하나하나 get() 하면서 성공 수 세기
+        int successCount = 0;
+        for (Future<Boolean> future : futures) {
+            if (future.get()) {
+                successCount++;
+            }
+        }
+        // ✅ 검증
+        assertThat(successCount).isEqualTo(10);
 
-        // ✅ 발급 성공 유저 수는 최대 수량(10)을 넘지 않아야 한다.
-        assertThat(successList.size()).isEqualTo(10);
-
-        // ✅ 실제 발급된 UserCoupon 수가 5인지 확인
         List<UserCoupon> allUserCoupons = userCouponRepository.findAll();
         assertThat(allUserCoupons.size()).isEqualTo(10);
 
-        // ✅ 쿠폰 발급 수량 증가 확인
-        Coupon issuedCoupon = couponRepository.findById(coupon.getId()).orElseThrow();
+        Coupon issuedCoupon = couponRepository.findById(testCoupon.getId()).orElseThrow();
         assertThat(issuedCoupon.getIssuedCount()).isEqualTo(10);
 
-        log.info("✅ 발급 성공한 유저 수: {}", successList.size());
-        log.info("❌ 실패한 유저 수: {}", threadCount - successList.size());
-        for (Long userId : successList) {
-            userRepository.findById(userId).ifPresent(user -> {
-                log.info("✅ 발급 성공 유저 - ID: {}, Name: {}, Balance: {}", user.getId(), user.getUsername(), user.getBalance());
-            });
-        }
+        log.info("✅ 발급 성공 유저 수: {}", successCount);
+        log.info("❌ 실패한 유저 수: {}", threadCount - successCount);
 
     }
 

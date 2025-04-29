@@ -25,4 +25,11 @@ public @interface RedisLock {
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
+    /**
+     * retry
+     */
+    boolean retry() default false; //재시도 여부
+    int retryCount() default 3;     // 재시도 횟수
+    long retryDelay() default 50L;  // 재시도 간격(ms)
+
 }

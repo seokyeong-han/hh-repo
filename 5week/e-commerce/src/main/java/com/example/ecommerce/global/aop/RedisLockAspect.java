@@ -42,16 +42,42 @@ public class RedisLockAspect {
         String lockKey = parser.parseExpression(ann.key()).getValue(ctx, String.class);
 
         RLock lock = redissonClient.getLock(lockKey);
-        log.info("🔒 락 시도 - key: {}", lockKey);
+        
 
-        // 수정된 부분: 최대 waitTime 만큼 대기하면서 락 획득 시도
-        boolean acquired = lock.tryLock(
-                ann.waitTime(),
-                ann.leaseTime(),
-                ann.timeUnit()
-        );
+        //어노테이션에서 가져오는 재실행 설정
+        int retryCount = ann.retryCount();
+        long retryDelay = ann.retryDelay();
+        //log.info("retry - retryCount: {}, retryDelay: {}", retryCount, retryDelay);
+
+        boolean acquired = false;
+
+        if (ann.retry()) {
+            while (retryCount-- > 0) { //retryCount 차감
+                log.info("🔒 재시도 락 시도 - key: {}", lockKey);
+
+                acquired = lock.tryLock(
+                        ann.waitTime(),
+                        ann.leaseTime(),
+                        ann.timeUnit()
+                );
+                if (acquired) {
+                    break;
+                }
+                log.warn("⚠️ 락 실패 - 재시도 남음 ({}회) - key: {}", retryCount, lockKey);
+                Thread.sleep(retryDelay);
+            }
+        }else{
+            log.info("🔒 단일 락 시도 - key: {}", lockKey);
+            //1번만 시도
+            acquired = lock.tryLock(
+                    ann.waitTime(),
+                    ann.leaseTime(),
+                    ann.timeUnit()
+            );
+        }
+
         if (!acquired) {
-            log.warn("⚠️ 락 실패 - key: {}", lockKey);
+            log.error("❌ 최종 락 실패 - key: {}", lockKey);
             throw new IllegalStateException("Redisson 락 획득 실패: " + lockKey);
         }
         log.info("✅ 락 획득 성공 - key: {}", lockKey);
@@ -60,7 +86,6 @@ public class RedisLockAspect {
             return pjp.proceed();
         } finally {
             if (TransactionSynchronizationManager.isSynchronizationActive()) {
-                // 트랜잭션 커밋 후 락 해제
                 TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                     @Override
                     public void afterCommit() {
@@ -71,7 +96,6 @@ public class RedisLockAspect {
                     }
                 });
             } else {
-                // 트랜잭션 없으면 바로 락 해제
                 if (lock.isHeldByCurrentThread()) {
                     lock.unlock();
                     log.info("🔓 트랜잭션 없이 락 즉시 해제 - key: {}", lockKey);
