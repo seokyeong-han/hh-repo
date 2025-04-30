@@ -45,12 +45,9 @@ public class CouponService {
     }
 
    @RedisLock(key = "'lock:coupon:' + #couponId"
-            , waitTime = 10
-            , leaseTime = 7
-            , timeUnit = TimeUnit.SECONDS
-            , retry = true
-            , retryCount = 5
-            , retryDelay =  100)
+            , waitTime = 5
+            , leaseTime = 1
+            , timeUnit = TimeUnit.SECONDS)
     /*@Retryable( //비관적 락을 걸어 쿠폰 조회를 막았지만 15명 시도중 다 성공하지 못해 재시도 로직을 구현
             value = {
                     PessimisticLockException.class
@@ -76,13 +73,13 @@ public class CouponService {
         Coupon coupon = couponRepository.findWithLockById(couponId) //비관적 락으로 쿠폰 조회
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
 
-       coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
-       couponRepository.save(coupon);
-
         try {
             //유저 쿠폰 발급 (used = false)
             UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
             userCouponRepository.save(userCoupon);
+
+            coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
+            couponRepository.save(coupon);
         }catch (DataIntegrityViolationException e){
             // DB 유니크 제약 위반: 이미 발급된 경우
             throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.", e);

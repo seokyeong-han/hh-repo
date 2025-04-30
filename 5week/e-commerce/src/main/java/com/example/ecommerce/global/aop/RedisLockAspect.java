@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.lang.reflect.Method;
+
 @Aspect
 @Component
 @Slf4j
@@ -35,52 +37,29 @@ public class RedisLockAspect {
     @Around("@annotation(com.example.ecommerce.global.annotation.RedisLock)")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
         MethodSignature sig = (MethodSignature) pjp.getSignature();
-        RedisLock ann = sig.getMethod().getAnnotation(RedisLock.class);
+        Method method = sig.getMethod();
+        RedisLock ann = method.getAnnotation(RedisLock.class);
 
-        StandardEvaluationContext ctx =
-                new MethodBasedEvaluationContext(pjp.getTarget(), sig.getMethod(), pjp.getArgs(), nameDiscoverer);
-        String lockKey = parser.parseExpression(ann.key()).getValue(ctx, String.class);
-
-        RLock lock = redissonClient.getLock(lockKey);
-        
-
-        //어노테이션에서 가져오는 재실행 설정
-        int retryCount = ann.retryCount();
-        long retryDelay = ann.retryDelay();
-        //log.info("retry - retryCount: {}, retryDelay: {}", retryCount, retryDelay);
-
-        boolean acquired = false;
-
-        if (ann.retry()) {
-            while (retryCount-- > 0) { //retryCount 차감
-                log.info("🔒 재시도 락 시도 - key: {}", lockKey);
-
-                acquired = lock.tryLock(
-                        ann.waitTime(),
-                        ann.leaseTime(),
-                        ann.timeUnit()
-                );
-                if (acquired) {
-                    break;
-                }
-                log.warn("⚠️ 락 실패 - 재시도 남음 ({}회) - key: {}", retryCount, lockKey);
-                Thread.sleep(retryDelay);
+        StandardEvaluationContext ctx = new StandardEvaluationContext(pjp.getTarget());
+        String[] parameterNames = nameDiscoverer.getParameterNames(method);
+        Object[] args = pjp.getArgs();
+        if (parameterNames != null) {
+            for (int i = 0; i < parameterNames.length; i++) {
+                ctx.setVariable(parameterNames[i], args[i]);
             }
-        }else{
-            log.info("🔒 단일 락 시도 - key: {}", lockKey);
-            //1번만 시도
-            acquired = lock.tryLock(
-                    ann.waitTime(),
-                    ann.leaseTime(),
-                    ann.timeUnit()
-            );
         }
+
+        String lockKey = parser.parseExpression(ann.key()).getValue(ctx, String.class);
+        RLock lock = redissonClient.getLock(lockKey);
+
+        log.info("🔒 락 시도 시작 - key: {}, thread: {}", lockKey, Thread.currentThread().getName());
+        boolean acquired = lock.tryLock(ann.waitTime(), ann.leaseTime(), ann.timeUnit());
 
         if (!acquired) {
-            log.error("❌ 최종 락 실패 - key: {}", lockKey);
+            log.error("❌ 락 획득 실패 - key: {}, thread: {}", lockKey, Thread.currentThread().getName());
             throw new IllegalStateException("Redisson 락 획득 실패: " + lockKey);
         }
-        log.info("✅ 락 획득 성공 - key: {}", lockKey);
+        log.info("✅ 락 획득 성공 - key: {}, thread: {}", lockKey, Thread.currentThread().getName());
 
         try {
             return pjp.proceed();
@@ -91,16 +70,17 @@ public class RedisLockAspect {
                     public void afterCommit() {
                         if (lock.isHeldByCurrentThread()) {
                             lock.unlock();
-                            log.info("🔓 트랜잭션 커밋 후 락 해제 - key: {}", lockKey);
+                            log.info("🔓 트랜잭션 커밋 후 락 해제 - key: {}, thread: {}", lockKey, Thread.currentThread().getName());
                         }
                     }
                 });
             } else {
                 if (lock.isHeldByCurrentThread()) {
                     lock.unlock();
-                    log.info("🔓 트랜잭션 없이 락 즉시 해제 - key: {}", lockKey);
+                    log.info("🔓 트랜잭션 없이 락 즉시 해제 - key: {}, thread: {}", lockKey, Thread.currentThread().getName());
                 }
             }
         }
     }
+
 }

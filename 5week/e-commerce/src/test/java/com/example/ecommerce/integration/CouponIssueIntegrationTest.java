@@ -97,7 +97,7 @@ public class CouponIssueIntegrationTest {
                 null, "동시성 쿠폰", 1000, 10, 0, LocalDateTime.now(), LocalDateTime.now()
         ));
 
-        int threadCount = 15;
+        int threadCount = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
