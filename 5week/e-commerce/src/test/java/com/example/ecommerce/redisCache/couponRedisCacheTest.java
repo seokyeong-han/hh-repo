@@ -71,13 +71,13 @@ public class couponRedisCacheTest {
         long startDb = System.nanoTime();
         couponRepository.findById(couponId).orElseThrow();
         long endDb = System.nanoTime();
-        System.out.println("⛏ DB 조회 시간(ns): " + (endDb - startDb));
+        log.info(":: DB 조회 시간(ns): " + (endDb - startDb));
 
         // 2. Redis 조회 성능
         long startRedis = System.nanoTime();
         CouponResponse redisResult = redisCacheUtil.get(redisKey, CouponResponse.class);
         long endRedis = System.nanoTime();
-        System.out.println("⚡ Redis 조회 시간(ns): " + (endRedis - startRedis));
+        log.info(":: Redis 조회 시간(ns): " + (endRedis - startRedis));
 
         assertNotNull(redisResult);
         assertEquals(couponId, redisResult.id());
