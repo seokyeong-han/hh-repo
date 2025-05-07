@@ -97,7 +97,7 @@ public class CouponIssueIntegrationTest {
                 null, "동시성 쿠폰", 1000, 10, 0, LocalDateTime.now(), LocalDateTime.now()
         ));
 
-        int threadCount = 10;
+        int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -127,7 +127,7 @@ public class CouponIssueIntegrationTest {
         }
 
         latch.await();
-        Thread.sleep(1000);  // 🔥 RedisLock 트랜잭션 끝날 시간 확보
+        //Thread.sleep(1000);  // 🔥 RedisLock 트랜잭션 끝날 시간 확보
         // ✅ Future 결과를 하나하나 get() 하면서 성공 수 세기
         int successCount = 0;
         for (Future<Boolean> future : futures) {

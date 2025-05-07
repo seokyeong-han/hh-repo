@@ -80,6 +80,7 @@ public class CouponService {
 
             coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
             couponRepository.save(coupon);
+
         }catch (DataIntegrityViolationException e){
             // DB 유니크 제약 위반: 이미 발급된 경우
             throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.", e);
