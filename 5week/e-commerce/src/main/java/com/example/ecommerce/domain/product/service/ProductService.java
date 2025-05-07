@@ -40,35 +40,6 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public PreparedOrderItems prepareOrderItems(List<OrderCommand> itemRequests) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderCommand command : itemRequests) {
-            // 개별 트랜잭션 단위로 락 걸어서 재고 차감
-            tryDecreaseStock(command.getProductId(), command.getQuantity());
-            Product product = findById(command.getProductId());
-            // 총 가격 계산
-            long pricePerItem = product.getPrice();
-            long totalPrice = pricePerItem * command.getQuantity();
-            //주문 아이템 생성
-            OrderItem item = new OrderItem(
-                    null, null, product.getId(), command.getQuantity(),
-                    totalPrice, pricePerItem, LocalDateTime.now());
-            orderItems.add(item);
-            // 재고 저장 (낙관락 충돌 가능 구간)
-            save(product);
-        }
-        return new PreparedOrderItems(orderItems);
-    }
-
-    @Transactional
-    public void tryDecreaseStock(Long productId, int quantity) { // 비관적 락과 재고 차감을 같은 트랜잭션 내에서 처리
-        Product product = productRepository.findWithPessimisticLockById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
-
-        product.deductStock(quantity);
-        productRepository.save(product);
-    }
-
     //재고 롤백
     @Transactional
     public void rollbackStock(List<OrderItem> orderItems) { // 트랜잭션 내에서 롤백 처리
