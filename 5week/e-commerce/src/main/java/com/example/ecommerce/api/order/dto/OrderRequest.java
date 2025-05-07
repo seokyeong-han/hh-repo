@@ -1,6 +1,7 @@
 package com.example.ecommerce.api.order.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,11 @@ public class OrderRequest {
     private Long userId;
     private List<OrderItemRequest> items;
 
+    @Builder
+    public OrderRequest(Long userId, List<OrderItemRequest> items) {
+        this.userId = userId;
+        this.items = items;
+    }
 
     @Getter
     @Setter
