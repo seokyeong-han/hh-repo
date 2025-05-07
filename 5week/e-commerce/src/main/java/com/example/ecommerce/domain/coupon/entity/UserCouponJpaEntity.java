@@ -6,10 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_coupon",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"userId", "couponId"})
-        })
+@Table(name = "user_coupon")
 public class UserCouponJpaEntity {
     @Id
     @GeneratedValue

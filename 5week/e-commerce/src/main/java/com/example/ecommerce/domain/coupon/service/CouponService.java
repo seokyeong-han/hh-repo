@@ -44,10 +44,7 @@ public class CouponService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
     }
 
-   @RedisLock(key = "'lock:coupon:' + #couponId"
-            , waitTime = 5
-            , leaseTime = 1
-            , timeUnit = TimeUnit.SECONDS)
+
     /*@Retryable( //비관적 락을 걸어 쿠폰 조회를 막았지만 15명 시도중 다 성공하지 못해 재시도 로직을 구현
             value = {
                     PessimisticLockException.class
@@ -57,36 +54,32 @@ public class CouponService {
             },
             backoff = @Backoff(delay = 50)
     )*/
+    @RedisLock(key = "'lock:coupon:' + #couponId"
+            , waitTime = 5
+            , leaseTime = 1
+            , timeUnit = TimeUnit.SECONDS)
     @Transactional
     public void assignCouponToUser(Long couponId, Long userId) {
         log.info("🟡 시도 - userId={}, couponId={}", userId, couponId);
 
         // 유저가 이 쿠폰을 발급받은 적 있는지 확인
-        /*
-        user coupon entity에 유니크키를 userid, couponid로 걸어놔 검색 필요없음
         userCouponRepository.findByUserIdAndCouponId(userId, couponId)
                 .ifPresent(userCoupon -> {throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.");
-                });*/
+                });
 
         //쿠폰 재고 확인 및 발급 처리
         //Coupon coupon = couponRepository.findById(couponId)
         Coupon coupon = couponRepository.findWithLockById(couponId) //비관적 락으로 쿠폰 조회
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다."));
 
-        try {
-            //유저 쿠폰 발급 (used = false)
-            UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
-            userCouponRepository.save(userCoupon);
+        //유저 쿠폰 발급 (used = false)
+        UserCoupon userCoupon = new UserCoupon(null, userId, couponId, false, LocalDateTime.now());
+        userCouponRepository.save(userCoupon);
 
-            coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
-            couponRepository.save(coupon);
+        coupon.assignToUser();  // 도메인에서 재고 체크 및 증가
+        couponRepository.save(coupon);
 
-        }catch (DataIntegrityViolationException e){
-            // DB 유니크 제약 위반: 이미 발급된 경우
-            throw new IllegalStateException("이미 이 쿠폰을 발급받은 유저입니다.", e);
-        }
         //히스토리 기능은 추후 개발 예정
-
     }
 
 
