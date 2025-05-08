@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -27,7 +28,8 @@ public class PopularProductService {
      */
     public void increaseViewCount(Long productId) {
         String key = getTodayKey();
-        redisTemplate.opsForZSet().incrementScore(key, productId.toString(), 1);
+        redisTemplate.opsForZSet().incrementScore(key, productId.toString(), 1); //ZSET 점수 증가
+        redisTemplate.expire(key, Duration.ofDays(2));//TTL 설정: 2일 뒤 자동 만료
     }
 
     /**
