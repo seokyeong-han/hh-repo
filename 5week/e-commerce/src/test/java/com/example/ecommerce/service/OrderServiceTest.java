@@ -7,6 +7,7 @@ import com.example.ecommerce.domain.order.repository.OrderItemRepository;
 import com.example.ecommerce.domain.order.repository.OrderRepository;
 import com.example.ecommerce.domain.order.service.OrderService;
 import com.example.ecommerce.domain.product.model.Product;
+import com.example.ecommerce.domain.product.repository.ProductRepository;
 import com.example.ecommerce.domain.product.service.ProductService;
 import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.domain.user.repository.UserRepository;
@@ -38,6 +39,7 @@ public class OrderServiceTest {
     private UserService userService;
     private OrderService orderService;
     private ProductService productService;
+    private ProductRepository productRepository;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +47,7 @@ public class OrderServiceTest {
         orderRepository = mock(OrderRepository.class);
         orderItemRepository = mock(OrderItemRepository.class);
         userService = new UserService(userRepository);
-        orderService = new OrderService(userService, productService, orderRepository, orderItemRepository);
+        orderService = new OrderService(userService, productService, productRepository, orderRepository, orderItemRepository);
         //내가 userService에서 설정한 순서대로 선언해야합니다.
     }
 

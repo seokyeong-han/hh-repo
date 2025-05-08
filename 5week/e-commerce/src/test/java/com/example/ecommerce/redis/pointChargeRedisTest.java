@@ -28,7 +28,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @Testcontainers
-@SuppressWarnings("resource")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class pointChargeRedisTest {
     private static final Logger log = LoggerFactory.getLogger(pointChargeRedisTest.class);

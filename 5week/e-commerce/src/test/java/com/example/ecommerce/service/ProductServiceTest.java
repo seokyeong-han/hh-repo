@@ -2,6 +2,8 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.api.order.dto.OrderCommand;
 import com.example.ecommerce.api.product.dto.PreparedOrderItems;
+import com.example.ecommerce.domain.order.repository.OrderRepository;
+import com.example.ecommerce.domain.order.service.OrderService;
 import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
 import com.example.ecommerce.domain.product.service.ProductService;
@@ -27,9 +29,13 @@ public class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private OrderRepository orderRepository;
 
     @InjectMocks
     private ProductService productService;
+    @InjectMocks
+    private OrderService orderService;
 
     @Test
     @DisplayName("상품이 존재하지 않으면 예외 발생")
@@ -40,7 +46,7 @@ public class ProductServiceTest {
         when(productRepository.findById(99L)).thenReturn(Optional.empty());//빈 optional값이 왔음
 
         // when & then
-        assertThatThrownBy(() -> productService.prepareOrderItems(commands))
+        assertThatThrownBy(() -> orderService.prepareOrderItems(commands))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("상품을 찾을 수 없습니다.");
     }
@@ -56,7 +62,7 @@ public class ProductServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when & then
-        assertThatThrownBy(() -> productService.prepareOrderItems(commands))
+        assertThatThrownBy(() -> orderService.prepareOrderItems(commands))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("상품 재고가 부족합니다.");
 
@@ -79,7 +85,7 @@ public class ProductServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product1));
         when(productRepository.findById(2L)).thenReturn(Optional.of(product2));
 
-        PreparedOrderItems result = productService.prepareOrderItems(commands);
+        PreparedOrderItems result = orderService.prepareOrderItems(commands);
 
         // then
         assertThat(result.getOrderItems()).hasSize(2);
