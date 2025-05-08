@@ -5,18 +5,12 @@ import com.example.ecommerce.domain.coupon.model.UserCoupon;
 import com.example.ecommerce.domain.coupon.repository.CouponRepository;
 import com.example.ecommerce.domain.coupon.repository.UserCouponRepository;
 import com.example.ecommerce.global.annotation.RedisLock;
-import jakarta.persistence.PessimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.retry.annotation.Retryable;
 
-import java.sql.SQLTransientConnectionException;
-import java.sql.SQLTransientException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
