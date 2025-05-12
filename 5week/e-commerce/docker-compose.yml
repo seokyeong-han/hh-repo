@@ -1,0 +1,6 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis-dev
+    ports:
+      - "6380:6379"  # 외부 6380포트로 사용

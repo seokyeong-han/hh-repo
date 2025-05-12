@@ -1,6 +1,8 @@
 package com.example.ecommerce.integration;
 
 import com.example.ecommerce.api.order.dto.OrderCommand;
+import com.example.ecommerce.api.order.dto.OrderRequest;
+import com.example.ecommerce.api.order.facade.OrderFacade;
 import com.example.ecommerce.api.product.dto.PreparedOrderItems;
 import com.example.ecommerce.domain.order.model.Order;
 import com.example.ecommerce.domain.order.model.OrderItem;
@@ -23,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -34,6 +37,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -51,14 +56,26 @@ public class OrderIntergrationTest {
             .withUsername("testuser")
             .withPassword("testpass");
 
+    @Container
+    static GenericContainer<?> redis = new GenericContainer<>("redis:7.2.4")
+            .withExposedPorts(6379); // Redis 기본 포트 6379
+
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         mysql.start(); // 컨테이너 먼저 시작
+        redis.start(); // Redis 컨테이너 시작
+
         registry.add("spring.datasource.url", mysql::getJdbcUrl);
         registry.add("spring.datasource.username", mysql::getUsername);
         registry.add("spring.datasource.password", mysql::getPassword);
+
+        registry.add("spring.data.redis.host", () -> redis.getHost());
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
+
     }
 
+    @Autowired
+    private OrderFacade orderFacade;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -71,7 +88,86 @@ public class OrderIntergrationTest {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
+    /////////////////////////////
+    /// 동시성 TEST
+    /// ////////////////////////
+    @Test
+    void 동시_여러_유저_하나의_상품_주문_성공() throws InterruptedException {
+        // given: 유저 10명 생성
+        List<User> users = IntStream.range(0, 10)
+                .mapToObj(i -> new User(null, "유저" + i, 5000L, null))
+                .map(userRepository::save)
+                .toList();
 
+        Product p1 = productRepository.save(new Product(null, 5000L, 2)); // 재고 1개
+
+        int threadCount = 10;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger successCount = new AtomicInteger();
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            final User user = users.get(i);
+            executor.submit(() -> {
+                try {
+                    OrderRequest request = new OrderRequest(user.getId(),
+                            List.of(new OrderRequest.OrderItemRequest(p1.getId(), 1)));
+                    orderFacade.placeOrder(request);
+                    successCount.incrementAndGet();
+                } catch (Exception e) {
+                    log.warn("주문 실패: {}", e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then: 성공 갯수
+        assertThat(successCount.get()).isEqualTo(2);
+    }
+
+    @Test
+    void 동시_같은_상품_주문_1개_성공() throws InterruptedException {
+        // given
+        User user = userRepository.save(new User(null, "test유저", 10_000L, null)); // 잔액 부족 유도
+        Product p1 = productRepository.save(new Product(null, 5000L, 1));
+        Product p2 = productRepository.save(new Product(null, 3000L, 1));
+
+        OrderRequest request = new OrderRequest(user.getId(),
+                List.of(
+                        new OrderRequest.OrderItemRequest(p1.getId(), 1)
+                        ,new OrderRequest.OrderItemRequest(p2.getId(), 1)
+                ));
+
+        int threadCount = 10;
+
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+        AtomicInteger successCount = new AtomicInteger();
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            executor.submit(() -> {
+                try {
+                    orderFacade.placeOrder(request);
+                    successCount.incrementAndGet();
+                } catch (Exception e) {
+                    log.warn("주문 실패: {}", e.getMessage());
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await();
+
+        // then
+        assertThat(successCount.get()).isEqualTo(1);
+    }
+    ////////////////////////////
     @Test
     @Transactional
     @DisplayName("재고 차감 성공 후 주문 실패 시 재고 롤백된다")
@@ -86,7 +182,7 @@ public class OrderIntergrationTest {
 
         // when
         assertThatThrownBy(() -> {
-            PreparedOrderItems prepared = productService.prepareOrderItems(commands); // 여기서 재고 차감
+            PreparedOrderItems prepared = orderService.prepareOrderItems(commands); // 여기서 재고 차감
             orderService.placeOrder(user.getId(), prepared); // 여기서 잔액 부족으로 실패 -> 롤백
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("잔액이 부족");
@@ -113,7 +209,8 @@ public class OrderIntergrationTest {
         for (int i = 0; i < threadCount; i++) {
             executor.submit(() -> {
                 try {
-                    productService.tryDecreaseStock(saved.getId(), 1); // ✅ 트랜잭션 내에서 실행
+                    List<OrderCommand> commands = List.of(new OrderCommand(saved.getId(), 1));
+                    orderService.prepareOrderItems(commands); // ✅ 새 서비스 메서드 호출
                     results.add("성공");
                 } catch (Exception e) {
                     results.add("실패: " + e.getMessage());

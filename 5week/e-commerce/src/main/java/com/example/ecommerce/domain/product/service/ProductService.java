@@ -1,25 +1,25 @@
 package com.example.ecommerce.domain.product.service;
 
-import com.example.ecommerce.api.order.dto.OrderCommand;
-import com.example.ecommerce.api.product.dto.PreparedOrderItems;
 import com.example.ecommerce.domain.order.model.OrderItem;
 import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
+import com.example.ecommerce.global.cache.CacheConstants;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final CacheManager cacheManager;
+
+    public static final String PRODUCT_DETAIL = CacheConstants.PRODUCT_DETAIL;
 
     //전체 상품 조회
     public List<Product> findAll() {
@@ -27,46 +27,23 @@ public class ProductService {
     }
 
     //단일 상품 조회
+    @Cacheable(value = PRODUCT_DETAIL, key = "#id")
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
     }
 
+    //사용하지 않으나 사용시 레디스 캐시 삭제 해줘야한다.
     public void saveAll(List<Product> products) {
         productRepository.saveAll(products);
     }
 
     public void save(Product product) {
-        productRepository.save(product);
-    }
-
-    public PreparedOrderItems prepareOrderItems(List<OrderCommand> itemRequests) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (OrderCommand command : itemRequests) {
-            // 개별 트랜잭션 단위로 락 걸어서 재고 차감
-            tryDecreaseStock(command.getProductId(), command.getQuantity());
-            Product product = findById(command.getProductId());
-            // 총 가격 계산
-            long pricePerItem = product.getPrice();
-            long totalPrice = pricePerItem * command.getQuantity();
-            //주문 아이템 생성
-            OrderItem item = new OrderItem(
-                    null, null, product.getId(), command.getQuantity(),
-                    totalPrice, pricePerItem, LocalDateTime.now());
-            orderItems.add(item);
-            // 재고 저장 (낙관락 충돌 가능 구간)
-            save(product);
-        }
-        return new PreparedOrderItems(orderItems);
-    }
-
-    @Transactional
-    public void tryDecreaseStock(Long productId, int quantity) { // 비관적 락과 재고 차감을 같은 트랜잭션 내에서 처리
-        Product product = productRepository.findWithPessimisticLockById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
-
-        product.deductStock(quantity);
-        productRepository.save(product);
+        Product saved = productRepository.save(product);
+        //@CacheEvict사용시 최초 상품 등록시 캐시가 없어 오류가 나 저장된 목록을 캐시 삭제 하도록 수정
+        cacheManager
+                .getCache(PRODUCT_DETAIL)
+                .evict(saved.getId());
     }
 
     //재고 롤백
@@ -75,7 +52,11 @@ public class ProductService {
         for (OrderItem item : orderItems) {
             Product product = findById(item.getProductId());
             product.restoreStock(item.getQuantity());
-            productRepository.save(product);
+            Product saved = productRepository.save(product);
+
+            cacheManager
+                    .getCache(PRODUCT_DETAIL)
+                    .evict(saved.getId());
         }
     }
 

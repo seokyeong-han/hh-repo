@@ -8,6 +8,11 @@ public class Product {
     private Long price;
     private Integer stock;
 
+    /** Jackson, JPA 용 기본 생성자 (필수) */
+    protected Product() {
+        // 빈 바디로 둡니다.
+    }
+
     // 생성자
     public Product(Long id, Long price, Integer stock) {
         this.id = id;

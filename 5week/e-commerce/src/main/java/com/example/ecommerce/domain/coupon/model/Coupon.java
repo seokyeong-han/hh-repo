@@ -1,10 +1,14 @@
 package com.example.ecommerce.domain.coupon.model;
 
 import com.example.ecommerce.domain.coupon.entity.CouponJpaEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
 public class Coupon {
+    private static final Logger log = LoggerFactory.getLogger(Coupon.class);
+
     private Long id;     //쿠폰 id
     private String name; //쿠폰 명
     private int discountAmount; //할인 금액
@@ -38,10 +42,9 @@ public class Coupon {
 
     // 쿠폰 발급
     public void assignToUser() {
-//        if (!hasRemainingQuantity()) {
-//            throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
-//        }
+        log.info("쿠폰 재고 확인");
         if (issuedCount >= totalCount) {
+            log.info("쿠폰 소진됨");
             throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
         }
         issuedCount++; // 도메인 객체 자체에서 상태 변화
