@@ -1,18 +1,19 @@
 package com.example.ecommerce.infrastructure.ranking;
 
+import com.example.ecommerce.common.recode.DailyRanking;
 import com.example.ecommerce.domain.ranking.entity.DailyRankingJpaEntity;
 import com.example.ecommerce.domain.ranking.repository.RankingRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.IntStream;
+
 
 @Repository
 @RequiredArgsConstructor
-public abstract class JpaRankingRepositoryImpl implements RankingRepository {
+public class JpaRankingRepositoryImpl implements RankingRepository {
     private final RankingJpaRepository jpaRepository;
 
     @Override
@@ -21,20 +22,26 @@ public abstract class JpaRankingRepositoryImpl implements RankingRepository {
     }
 
     @Override
-    public void saveDaily(LocalDate date, List<Long> topIds) {
+    public void saveDaily(LocalDate date, List<DailyRanking> rankings) {
         // 1. 기존 랭킹 삭제
         deleteByDate(date);
 
         // 2. 새로운 엔티티로 변환해서 저장
-        List<DailyRankingJpaEntity> entities = IntStream.range(0, topIds.size())
-                .mapToObj(i ->
-                        new DailyRankingJpaEntity(
-                                date,
-                                topIds.get(i),
-                                i + 1    // 순위는 1부터 시작
-                        )
-                )
+        List<DailyRankingJpaEntity> entities = rankings.stream()
+                .map(r -> new DailyRankingJpaEntity(date, r.productId(), r.rank(), r.score()))
                 .toList();
         jpaRepository.saveAll(entities);
+    }
+
+    @Override
+    public List<DailyRanking> findByDate(LocalDate date) {
+        return jpaRepository.findByRankingDate(date).stream()
+                .map(e -> new DailyRanking(e.getRankingDate(), e.getProductId(), e.getRank(), e.getScore()))
+                .toList();
+    }
+
+    @Override
+    public List<DailyRanking> findBetweenDates(LocalDate start, LocalDate end) {
+        return jpaRepository.findBetweenDates(start, end);
     }
 }
