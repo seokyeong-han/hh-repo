@@ -2,6 +2,7 @@ package com.example.ecommerce.domain.order.service;
 
 import com.example.ecommerce.api.order.dto.OrderCommand;
 import com.example.ecommerce.api.product.dto.PreparedOrderItems;
+import com.example.ecommerce.domain.order.event.OrderPlacedEvent;
 import com.example.ecommerce.domain.order.model.Order;
 import com.example.ecommerce.domain.order.model.OrderItem;
 import com.example.ecommerce.domain.order.repository.OrderItemRepository;
@@ -15,6 +16,7 @@ import com.example.ecommerce.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional // 핵심 도메인 로직 묶음
     public void placeOrder(Long userId, PreparedOrderItems prepared){
@@ -44,6 +47,13 @@ public class OrderService {
             Order saveOrder = orderRepository.save(order);
             //order item 저장
             orderItemRepository.saveAll(prepared.getOrderItems(), saveOrder.getId());
+
+            //주문 조회수 증가 이벤트 발행
+            List<Long> productIds = prepared.getOrderItems().stream()
+                    .map(OrderItem::getProductId)
+                    .toList();
+            eventPublisher.publishEvent(new OrderPlacedEvent(productIds));
+
         } catch (Exception e) {
             log.warn("⚠ 주문 처리 실패. 재고 롤백 수행 중...");
             productService.rollbackStock(prepared.getOrderItems());

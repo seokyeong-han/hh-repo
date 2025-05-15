@@ -7,12 +7,14 @@ import com.example.ecommerce.domain.coupon.repository.UserCouponRepository;
 import com.example.ecommerce.global.annotation.RedisLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -21,10 +23,12 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public  CouponService(CouponRepository couponRepository, UserCouponRepository userCouponRepository) {
+    public  CouponService(CouponRepository couponRepository, UserCouponRepository userCouponRepository, RedisTemplate<String, String> redisTemplate) {
         this.couponRepository = couponRepository;
         this.userCouponRepository = userCouponRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +80,67 @@ public class CouponService {
         //히스토리 기능은 추후 개발 예정
     }
 
+    //redis를 사용한 쿠폰 발급
+    //대기 사용
+    //중복 쿠폰 발급의 경우 아직 구현 x
+    //단일 쿠폰만 사용가능
+    public void requestCoupon(Long userId, Long couponId) {
+        String queueKey = "coupon:queue";
+        String value = userId + ":" + couponId;
+        double score = System.currentTimeMillis(); // milliseconds timestamp
+
+        redisTemplate.opsForZSet().add(queueKey, value, score);
+    }
+
+    public void processQueue() {
+        String queueKey = "coupon:queue";
+
+        // 최근 요청된 순서대로 최대 100개 처리
+        Set<String> entries = redisTemplate.opsForZSet().range(queueKey, 0, 99);
+
+        if (entries == null || entries.isEmpty()) return; //발급 대기 인원 없음
+
+        // ✅ 들어온 큐 요청 로그 출력
+        log.info("📝 발급 요청 큐 조회 (최대 100건):");
+        entries.forEach(entry -> {
+            String[] parts = entry.split(":");
+            Long userId = Long.valueOf(parts[0]);
+            Long couponId = Long.valueOf(parts[1]);
+
+            // score도 함께 출력하고 싶다면 ZSet score 조회
+            Double score = redisTemplate.opsForZSet().score(queueKey, entry);
+
+            log.info(" - 요청 userId={}, couponId={}, timestamp={}", userId, couponId, score != null ? score.longValue() : "null");
+        });
+
+
+        for (String entry : entries) {
+            String[] parts = entry.split(":");
+            Long userId = Long.valueOf(parts[0]);
+            Long couponId = Long.valueOf(parts[1]);
+
+            // 중복 체크
+            String issuedKey = "coupon:issued:" + couponId;
+            if (Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(issuedKey, userId.toString()))) {
+                continue;
+            }
+
+            // 재고 차감
+            String stockKey = "coupon:stock:" + couponId;
+            Long stock = redisTemplate.opsForValue().decrement(stockKey);
+            if (stock == null || stock < 0) {
+                redisTemplate.opsForValue().increment(stockKey); // 롤백
+                continue;
+            }
+
+            // 중복 방지 등록 + 발급 처리
+            redisTemplate.opsForSet().add(issuedKey, userId.toString());
+            userCouponRepository.save(new UserCoupon(null, userId, couponId, false, LocalDateTime.now()));
+
+            // ZSet에서 삭제
+            redisTemplate.opsForZSet().remove(queueKey, entry); // 발급 완료된 userId:couponId 항목 Redis ZSet(대기열)에서 제거
+        }
+    }
 
 
 }

@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,7 @@ public class OrderServiceTest {
     private OrderService orderService;
     private ProductService productService;
     private ProductRepository productRepository;
+    private ApplicationEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +49,7 @@ public class OrderServiceTest {
         orderRepository = mock(OrderRepository.class);
         orderItemRepository = mock(OrderItemRepository.class);
         userService = new UserService(userRepository);
-        orderService = new OrderService(userService, productService, productRepository, orderRepository, orderItemRepository);
+        orderService = new OrderService(userService, productService, productRepository, orderRepository, orderItemRepository,eventPublisher);
         //내가 userService에서 설정한 순서대로 선언해야합니다.
     }
 
