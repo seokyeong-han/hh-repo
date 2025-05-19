@@ -1,8 +1,10 @@
 package com.example.ecommerce.api.order.facade;
 
+import com.example.ecommerce.api.order.dto.EventOrderCommand;
 import com.example.ecommerce.api.order.dto.OrderCommand;
 import com.example.ecommerce.api.order.dto.OrderRequest;
 import com.example.ecommerce.api.product.dto.PreparedOrderItems;
+import com.example.ecommerce.domain.order.event.OrderEvent;
 import com.example.ecommerce.domain.order.model.OrderItem;
 import com.example.ecommerce.domain.order.service.OrderService;
 import com.example.ecommerce.domain.product.model.Product;
@@ -10,6 +12,7 @@ import com.example.ecommerce.domain.product.service.ProductService;
 import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.global.aop.RedisLockAspect;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +23,7 @@ public class OrderFacade {
     private final ProductService productService;
     private final OrderService orderService;
     private final RedisLockAspect redisLockAspect;
+    private final ApplicationEventPublisher eventPublisher;
 
     /*public void placeOrder(OrderRequest request){
         //facade -> service Dto변경
@@ -49,5 +53,14 @@ public class OrderFacade {
             orderService.placeOrder(request.getUserId(), prepared);
         });
 
+    }
+
+    /*
+    * 이벤트 발행
+    * */
+
+    public void placeOrder2(OrderRequest request) {
+        List<OrderCommand> commands = OrderRequest.toCommand(request);
+        eventPublisher.publishEvent(new OrderEvent(request.getUserId(), commands));
     }
 }
