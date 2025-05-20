@@ -1,5 +1,6 @@
 package com.example.ecommerce.api.order.dto;
 
+import com.example.ecommerce.common.recode.StockReserveRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,13 +31,6 @@ public class OrderRequest {
     public static List<OrderCommand> toCommand(OrderRequest request) {
         return request.getItems().stream()
                 .map(i -> new OrderCommand(i.getProductId(), i.getQuantity()))
-                .toList();
-    }
-
-    //이벤트용
-    public static List<EventOrderCommand> toCommand2(OrderRequest request) {
-        return request.getItems().stream()
-                .map(i -> new EventOrderCommand(i.getProductId(), i.getQuantity(), 0L))
                 .toList();
     }
 }
