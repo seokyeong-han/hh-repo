@@ -1,5 +1,7 @@
 package com.example.ecommerce.domain.product.service;
 
+import com.example.ecommerce.common.recode.StockReserveRequest;
+import com.example.ecommerce.common.recode.StockReservedItem;
 import com.example.ecommerce.domain.order.model.OrderItem;
 import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,6 +61,23 @@ public class ProductService {
                     .getCache(PRODUCT_DETAIL)
                     .evict(saved.getId());
         }
+    }
+
+    //stockService로 넘어가야함
+    @Transactional
+    public List<StockReservedItem> reserveStock(List<StockReserveRequest> requests) {
+        List<StockReservedItem> result = new ArrayList<>();
+        for (StockReserveRequest req : requests) {
+            Product product = productRepository.findWithPessimisticLockById(req.productId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품 없음: " + req.productId()));
+
+            product.deductStock(req.quantity());
+            productRepository.save(product);
+
+            long total = product.getPrice() * req.quantity();
+            result.add(new StockReservedItem(product.getId(), req.quantity(), product.getPrice(), total));
+        }
+        return result;
     }
 
 
