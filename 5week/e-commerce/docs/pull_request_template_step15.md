@@ -19,7 +19,7 @@ saga 패턴(보상 트랜젝션)
     
     - 지금 로직으로는 재고 차감 후에 주문 생성되어 재고 롤백 로직 
 
-기능 TEST commit : 
+기능 TEST commit : https://github.com/seokyeong-han/hh-repo/commit/364b4186044f7153d7c77431afef0265d1d0e782
 
 
 ### Api call
