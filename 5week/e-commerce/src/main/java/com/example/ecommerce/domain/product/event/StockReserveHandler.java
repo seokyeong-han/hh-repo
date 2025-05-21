@@ -1,7 +1,7 @@
 package com.example.ecommerce.domain.product.event;
 
+import com.example.ecommerce.common.recode.ProceedOrderEvent;
 import com.example.ecommerce.common.recode.StockReserveRequestedEvent;
-import com.example.ecommerce.common.recode.StockReservedEvent;
 import com.example.ecommerce.common.recode.StockReservedItem;
 import com.example.ecommerce.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class StockReserveHandler {
     public void handle(StockReserveRequestedEvent event) {
         List<StockReservedItem> reserved = productService.reserveStock(event.items()); //재고차감
 
-        eventPublisher.publishEvent(new StockReservedEvent( //주문 이벤트 발행
+        eventPublisher.publishEvent(new ProceedOrderEvent( //주문 이벤트 발행
                 event.userId(), reserved
         ));
     }
