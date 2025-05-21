@@ -61,11 +61,7 @@ public class OrderFacade {
 
         //재고차감 이벤트 발랭
         eventPublisher.publishEvent(
-                new StockReserveRequestedEvent(
-                        request.getUserId(),
-                        reserveRequests
-                )
-        );
+                new StockReserveRequestedEvent( request.getUserId(), reserveRequests));
 
     }
 }
