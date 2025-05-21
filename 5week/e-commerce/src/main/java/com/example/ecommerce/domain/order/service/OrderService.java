@@ -121,7 +121,7 @@ public class OrderService {
             //order item 저장
             orderItemRepository.saveAll(orderItems, saveOrder.getId());
 
-            //주문 랭킹 증가 이벤트 발행
+            //after-commit 주문 랭킹 증가 이벤트 발행
             List<Long> productIds = orderItems.stream()
                     .map(OrderItem::getProductId)
                     .toList();

@@ -54,14 +54,14 @@ public class OrderFacade {
     /*
     * 이벤트 발행
     * */
-    public void placeOrder3(OrderRequest request) {
-        List<StockReserveRequest> reserveRequests = request.getItems().stream()
-                .map(i -> new StockReserveRequest(i.getProductId(), i.getQuantity()))
-                .toList();
-
-        //재고차감 이벤트 발랭
-        eventPublisher.publishEvent(
-                new StockReserveRequestedEvent( request.getUserId(), reserveRequests));
-
-    }
+//    public void placeOrder3(OrderRequest request) {
+//        List<StockReserveRequest> reserveRequests = request.getItems().stream()
+//                .map(i -> new StockReserveRequest(i.getProductId(), i.getQuantity()))
+//                .toList();
+//
+//        //재고차감 이벤트 발행
+//        eventPublisher.publishEvent(
+//                new StockReserveRequestedEvent( request.getUserId(), reserveRequests));
+//
+//    }
 }

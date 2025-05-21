@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Async
 @Component
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class OrderEventHandler {
     private final OrderService orderService;
 
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(ProceedOrderEvent event) {
         orderService.eventPlaceOrder(event.userId(), event.items());
     }

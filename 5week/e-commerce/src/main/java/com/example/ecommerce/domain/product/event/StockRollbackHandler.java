@@ -22,6 +22,6 @@ public class StockRollbackHandler {
     @EventListener
     public void handle(StockRollbackRequestedEvent event) {
         log.info("🔁 재고 롤백 시작: {}", event.items());
-        productService.rollbackStock(event.items()); //이거 event용으로 새로 만들기
+        //productService.rollbackStock(event.items()); //이거 event용으로 새로 만들기
     }
 }
