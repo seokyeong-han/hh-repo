@@ -1,5 +1,6 @@
 package com.example.ecommerce.api.order.dto;
 
+import com.example.ecommerce.common.recode.StockReserveRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
