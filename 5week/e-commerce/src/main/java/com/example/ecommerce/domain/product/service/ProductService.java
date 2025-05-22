@@ -66,6 +66,21 @@ public class ProductService {
         }
     }
 
+    //EVENT기반 재고 롤백
+    @Transactional
+    public void rollbackStockEvent(List<StockReserveRequest> stockReserveRequests) {
+        for (StockReserveRequest item : stockReserveRequests) {
+            Product product = findById(item.productId());
+            product.restoreStock(item.quantity());
+            Product saved = productRepository.save(product);
+
+            cacheManager
+                    .getCache(PRODUCT_DETAIL)
+                    .evict(saved.getId());
+        }
+
+    }
+
     //stockService로 넘어가야함
     @Transactional
     public List<StockReservedItem> reserveStock(List<StockReserveRequest> requests) {
