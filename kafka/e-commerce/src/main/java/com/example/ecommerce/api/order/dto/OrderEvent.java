@@ -1,4 +1,4 @@
-package com.example.ecommerce.api.kafka.dto;
+package com.example.ecommerce.api.order.dto;
 
 import lombok.Getter;
 import lombok.Setter;
