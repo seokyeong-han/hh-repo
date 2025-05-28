@@ -1,6 +1,7 @@
 package com.example.ecommerce.config;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
+import com.example.ecommerce.domain.event.StockSuccessEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,8 +57,19 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, OrderStartEvent> orderKafkaTemplate() {
         return new KafkaTemplate<>(orderProducerFactory());
     }
-    /*
+
     // StockEvent
+    @Bean
+    public ProducerFactory<String, StockSuccessEvent> stockSuccessProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseProducerConfig());
+    }
+
+    @Bean
+    public KafkaTemplate<String, StockSuccessEvent> stockSuccessKafkaTemplate() {
+        return new KafkaTemplate<>(stockSuccessProducerFactory());
+    }
+    /*
+
     @Bean
     public ProducerFactory<String, StockEvent> stockProducerFactory() {
         Map<String, Object> config = baseProducerConfig();
