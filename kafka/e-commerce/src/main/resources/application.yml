@@ -1,6 +1,9 @@
 spring:
   application:
     name: e-commerce
+  jpa:
+    hibernate:
+      ddl-auto: update #create-drop
   ################
   kafka:
     bootstrap-servers: localhost:9092
@@ -17,3 +20,4 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  ################
