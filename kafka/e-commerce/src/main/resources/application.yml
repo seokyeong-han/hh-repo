@@ -4,6 +4,11 @@ spring:
   ################
   kafka:
     bootstrap-servers: localhost:9092
+
+    admin:
+      properties:
+        allow.auto.create.topics: true  # <- 토픽 자동 생성 허용
+
     consumer:
       group-id: test-group
       auto-offset-reset: earliest
