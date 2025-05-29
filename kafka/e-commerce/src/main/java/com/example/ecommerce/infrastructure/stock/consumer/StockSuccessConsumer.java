@@ -1,17 +1,25 @@
 package com.example.ecommerce.infrastructure.stock.consumer;
 
 import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
 public class StockSuccessConsumer {
     private static final Logger log = LoggerFactory.getLogger(StockSuccessConsumer.class);
+
+    private final OrderService orderService;
+
+    //private final RedisTemplate<String, String> redisTemplate;
 
     @KafkaListener(
             topics = "stock.success",
@@ -25,9 +33,12 @@ public class StockSuccessConsumer {
         log.info("✅ [OrderService] Received StockSuccessEvent (orderId={}): {}", orderId, event);
 
         try {
-
+            //주문 생성 실행
+            orderService.placeOrder(event.userId(), event.items());
+            //결제 이벤트 발행
+            log.info(":: 주문 성공");
         }catch (Exception e){
-
+            log.info(":: 주문 실패");
         }
 
 
