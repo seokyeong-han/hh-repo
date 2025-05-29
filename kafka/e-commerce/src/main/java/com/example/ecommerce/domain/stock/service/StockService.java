@@ -45,4 +45,17 @@ public class StockService {
 
         return result;
     }
+
+
+    //재고롤백
+    @Transactional
+    public void rollbackStock(List<ProductOrderItemMessage> items){
+        for(ProductOrderItemMessage item : items){
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
+            product.restoreStock(item.getQuantity());
+            Product saved = productRepository.save(product);
+        }
+
+    }
 }

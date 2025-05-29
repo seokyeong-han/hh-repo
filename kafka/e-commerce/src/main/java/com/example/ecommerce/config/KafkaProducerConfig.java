@@ -2,6 +2,7 @@ package com.example.ecommerce.config;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
 import com.example.ecommerce.domain.event.PaymentRequestedEvent;
+import com.example.ecommerce.domain.event.StockRollbackEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -68,6 +69,16 @@ public class KafkaProducerConfig {
     @Bean
     public KafkaTemplate<String, StockSuccessEvent> stockSuccessKafkaTemplate() {
         return new KafkaTemplate<>(stockSuccessProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, StockRollbackEvent> stockRollbackProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseProducerConfig());
+    }
+
+    @Bean
+    public KafkaTemplate<String, StockRollbackEvent> stockRollbackKafkaTemplate() {
+        return new KafkaTemplate<>(stockRollbackProducerFactory());
     }
 
     // PaymentEvent

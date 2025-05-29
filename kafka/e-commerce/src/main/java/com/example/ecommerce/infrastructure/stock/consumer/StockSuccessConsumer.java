@@ -1,6 +1,7 @@
 package com.example.ecommerce.infrastructure.stock.consumer;
 
 import com.example.ecommerce.domain.event.PaymentRequestedEvent;
+import com.example.ecommerce.domain.event.StockRollbackEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
 import com.example.ecommerce.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class StockSuccessConsumer {
 
     private final OrderService orderService;
     private final KafkaTemplate<String, PaymentRequestedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, StockRollbackEvent> kafkaTemplate2;
 
     //private final RedisTemplate<String, String> redisTemplate;
 
@@ -34,14 +36,18 @@ public class StockSuccessConsumer {
 
         try {
             //주문 생성 실행
-            Long totalAmount = orderService.placeOrder(event.userId(), event.items()); //total가격 리턴하면 될듯
+            Long totalAmount = orderService.placeOrder(event.userId(), event.items());
             //결제 이벤트 발행
             kafkaTemplate.send("payment.request", orderId, new PaymentRequestedEvent(
-                    orderId, event.userId(), totalAmount
+                    orderId, event.userId(), totalAmount, event.items()
             ));
             log.info(":: 주문 성공");
         }catch (Exception e){
-            log.info(":: 주문 실패");
+            log.info(":: 주문 실패 -> 재고 롤백 event");
+            // 재고 롤백 이벤트 발행
+            kafkaTemplate2.send("stock.rollback", orderId, new StockRollbackEvent(
+                    orderId, event.userId(), event.items()
+            ));
         }
 
 

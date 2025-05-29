@@ -2,6 +2,7 @@ package com.example.ecommerce.config;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
 import com.example.ecommerce.domain.event.PaymentRequestedEvent;
+import com.example.ecommerce.domain.event.StockRollbackEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -52,7 +53,7 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(orderConsumerFactory()); // 여기에 ConsumerFactory 주입!
         return factory;
     }
-
+    ///////////
     //stockSuccess
     @Bean
     public ConsumerFactory<String, StockSuccessEvent> stockSuccessConsumerFactory() {
@@ -71,6 +72,24 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, StockSuccessEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(stockSuccessConsumerFactory());
+        return factory;
+    }
+    //stock rollback
+    @Bean
+    public ConsumerFactory<String, StockRollbackEvent> stockRollbackConsumerFactory() {
+        JsonDeserializer<StockRollbackEvent> deserializer = new JsonDeserializer<>(StockRollbackEvent.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
+        Map<String, Object> config = new HashMap<>(baseConsumerConfig());
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "stock-service");
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(),deserializer);
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, StockRollbackEvent> stockRollbackKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, StockRollbackEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(stockRollbackConsumerFactory());
         return factory;
     }
     ///////////
