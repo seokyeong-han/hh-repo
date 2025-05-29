@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.order.service;
 
+import com.example.ecommerce.domain.order.dto.OrderResult;
 import com.example.ecommerce.domain.order.model.order.Order;
 import com.example.ecommerce.domain.order.model.orderItem.OrderItem;
 import com.example.ecommerce.domain.order.repository.orderItem.OrderItemRepository;
@@ -25,7 +26,7 @@ public class OrderService {
 
 
     @Transactional
-    public Long placeOrder(Long userId, List<ProductOrderItemMessage> items){
+    public OrderResult placeOrder(Long userId, List<ProductOrderItemMessage> items){
         List<OrderItem> orderItems = new ArrayList<>();
         long totalPrice = 0L; //주문별 총 가격
         for (ProductOrderItemMessage item : items) {
@@ -41,7 +42,24 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         orderItemRepository.saveAll(orderItems, savedOrder.getId());
 
-        return totalPrice;
+        return new OrderResult(savedOrder.getId(), totalPrice);
+
+    }
+
+    //주문 취소
+    @Transactional
+    public void cancelOrder(Long userId, Long orderId){
+        // 1. 주문 검증
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문 없음"));
+        if (!order.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("유저 불일치");
+        }
+        // 2. OrderItem 삭제
+        orderItemRepository.deleteByOrderId(orderId);
+        // 3. Order 삭제
+        orderRepository.deleteByOrderId(orderId);
+        log.info("✅ 주문 및 주문 아이템 삭제 완료 (orderId={})", orderId);
 
     }
 }

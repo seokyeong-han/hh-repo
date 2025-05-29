@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface OrderItemRepository {
     List<OrderItem> saveAll(List<OrderItem> items, Long orderId);
+    void deleteByOrderId(Long orderId);
 }

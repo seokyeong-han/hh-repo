@@ -1,9 +1,6 @@
 package com.example.ecommerce.config;
 
-import com.example.ecommerce.domain.event.OrderStartEvent;
-import com.example.ecommerce.domain.event.PaymentRequestedEvent;
-import com.example.ecommerce.domain.event.StockRollbackEvent;
-import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.event.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +48,24 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, OrderStartEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderConsumerFactory()); // 여기에 ConsumerFactory 주입!
+        return factory;
+    }
+    //orderCancel
+    @Bean
+    public ConsumerFactory<String, OrderCancelEvent> orderCancelConsumerFactory() {
+        JsonDeserializer<OrderCancelEvent> deserializer = new JsonDeserializer<>(OrderCancelEvent.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
+        Map<String, Object> config = new HashMap<>(baseConsumerConfig());
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "order-service");
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, OrderCancelEvent> orderCancelKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderCancelEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(orderCancelConsumerFactory());
         return factory;
     }
     ///////////

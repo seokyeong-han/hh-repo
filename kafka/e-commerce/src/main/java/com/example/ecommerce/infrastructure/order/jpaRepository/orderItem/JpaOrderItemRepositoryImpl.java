@@ -27,4 +27,9 @@ public class JpaOrderItemRepositoryImpl implements OrderItemRepository {
                 .map(OrderItem::toDomain)
                 .toList();
     }
+
+    @Override
+    public void deleteByOrderId(Long orderId) {
+        jpaRepository.deleteByOrderId(orderId);
+    }
 }

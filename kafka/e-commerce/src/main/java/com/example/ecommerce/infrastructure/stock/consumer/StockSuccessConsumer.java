@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.stock.consumer;
 import com.example.ecommerce.domain.event.PaymentRequestedEvent;
 import com.example.ecommerce.domain.event.StockRollbackEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.order.dto.OrderResult;
 import com.example.ecommerce.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -36,10 +37,10 @@ public class StockSuccessConsumer {
 
         try {
             //주문 생성 실행
-            Long totalAmount = orderService.placeOrder(event.userId(), event.items());
+            OrderResult result = orderService.placeOrder(event.userId(), event.items());
             //결제 이벤트 발행
             kafkaTemplate.send("payment.request", orderId, new PaymentRequestedEvent(
-                    orderId, event.userId(), totalAmount, event.items()
+                    orderId, event.userId(), result.orderId(), result.totalPrice(), event.items()
             ));
             log.info(":: 주문 성공");
         }catch (Exception e){

@@ -1,9 +1,6 @@
 package com.example.ecommerce.config;
 
-import com.example.ecommerce.domain.event.OrderStartEvent;
-import com.example.ecommerce.domain.event.PaymentRequestedEvent;
-import com.example.ecommerce.domain.event.StockRollbackEvent;
-import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.event.*;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +57,16 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(orderProducerFactory());
     }
 
+    @Bean
+    public ProducerFactory<String, OrderCancelEvent> orderCancelProducerFactory() {
+        Map<String, Object> config = baseProducerConfig();
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+    @Bean
+    public KafkaTemplate<String, OrderCancelEvent> orderCancelKafkaTemplate() {
+        return new KafkaTemplate<>(orderCancelProducerFactory());
+    }
+
     // StockEvent
     @Bean
     public ProducerFactory<String, StockSuccessEvent> stockSuccessProducerFactory() {
@@ -91,19 +98,6 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(paymentRequestProducerFactory());
     }
 
-    /*
-
-    // PointEvent
-    @Bean
-    public ProducerFactory<String, PointEvent> pointProducerFactory() {
-        Map<String, Object> config = baseProducerConfig();
-        return new DefaultKafkaProducerFactory<>(config);
-    }
-
-    @Bean
-    public KafkaTemplate<String, PointEvent> pointKafkaTemplate() {
-        return new KafkaTemplate<>(pointProducerFactory());
-    }*/
 
 
 }
