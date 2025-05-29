@@ -2,6 +2,7 @@ package com.example.ecommerce.infrastructure.stock.consumer;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.product.dto.ProductOrderItemMessage;
 import com.example.ecommerce.domain.stock.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -33,9 +36,9 @@ public class StockConsumer {
 
         //재고 차감 service 호출
         try {
-            stockService.reduceStock(record.value(), record.key());
+            List<ProductOrderItemMessage> orderItems = stockService.reduceStock(record.value(), record.key());
             kafkaTemplate.send("stock.success", orderId, new StockSuccessEvent(
-                    orderId, event.userId(), event.items()
+                    orderId, event.userId(), orderItems
             ));
         } catch (Exception e) {
             log.error("재고 차감 실패: {}", e.getMessage());
