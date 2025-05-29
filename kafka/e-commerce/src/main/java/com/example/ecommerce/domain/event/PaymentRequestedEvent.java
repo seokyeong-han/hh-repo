@@ -1,7 +1,7 @@
 package com.example.ecommerce.domain.event;
 
 public record PaymentRequestedEvent(
-        Long orderId,
+        String orderId,
         Long userId,
         Long totalAmount) {
 }
