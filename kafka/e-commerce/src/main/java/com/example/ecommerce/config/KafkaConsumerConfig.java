@@ -1,6 +1,7 @@
 package com.example.ecommerce.config;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
+import com.example.ecommerce.domain.event.PaymentRequestedEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -73,6 +74,26 @@ public class KafkaConsumerConfig {
         return factory;
     }
     ///////////
+    //payment
+    @Bean
+    public ConsumerFactory<String, PaymentRequestedEvent>  paymentRequestConsumerFactory() {
+        JsonDeserializer<PaymentRequestedEvent> deserializer = new JsonDeserializer<>(PaymentRequestedEvent.class);
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.addTrustedPackages("*");
+        deserializer.setUseTypeMapperForKey(true);
+        Map<String, Object> config = new HashMap<>(baseConsumerConfig());
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, "payment-service");
+
+        return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedEvent> paymentRequestKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaymentRequestedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(paymentRequestConsumerFactory());
+        return factory;
+    }
+
 
 
 }

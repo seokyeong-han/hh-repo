@@ -1,6 +1,7 @@
 package com.example.ecommerce.config;
 
 import com.example.ecommerce.domain.event.OrderStartEvent;
+import com.example.ecommerce.domain.event.PaymentRequestedEvent;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -68,30 +69,18 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, StockSuccessEvent> stockSuccessKafkaTemplate() {
         return new KafkaTemplate<>(stockSuccessProducerFactory());
     }
-    /*
-
-    @Bean
-    public ProducerFactory<String, StockEvent> stockProducerFactory() {
-        Map<String, Object> config = baseProducerConfig();
-        return new DefaultKafkaProducerFactory<>(config);
-    }
-
-    @Bean
-    public KafkaTemplate<String, StockEvent> stockKafkaTemplate() {
-        return new KafkaTemplate<>(stockProducerFactory());
-    }
 
     // PaymentEvent
     @Bean
-    public ProducerFactory<String, PaymentEvent> paymentProducerFactory() {
-        Map<String, Object> config = baseProducerConfig();
-        return new DefaultKafkaProducerFactory<>(config);
+    public ProducerFactory<String, PaymentRequestedEvent> paymentRequestProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseProducerConfig());
+    }
+    @Bean
+    public KafkaTemplate<String, PaymentRequestedEvent> paymentRequestKafkaTemplate() {
+        return new KafkaTemplate<>(paymentRequestProducerFactory());
     }
 
-    @Bean
-    public KafkaTemplate<String, PaymentEvent> paymentKafkaTemplate() {
-        return new KafkaTemplate<>(paymentProducerFactory());
-    }
+    /*
 
     // PointEvent
     @Bean
