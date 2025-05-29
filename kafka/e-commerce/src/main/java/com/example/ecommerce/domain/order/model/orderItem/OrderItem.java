@@ -1,5 +1,6 @@
-package com.example.ecommerce.domain.order.model;
+package com.example.ecommerce.domain.order.model.orderItem;
 
+import com.example.ecommerce.domain.order.entity.orderItem.OrderItemJpaEntity;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -23,5 +24,18 @@ public class OrderItem {
         this.totalPrice = totalPrice;
         this.pricePerItem = pricePerItem;
         this.createdAt = createdAt;
+    }
+
+    // 정적 팩토리 메서드 (JPA Entity → Domain)
+    public static OrderItem toDomain(OrderItemJpaEntity entity) {
+        return new OrderItem(
+                entity.getId(),
+                entity.getOrderId(),
+                entity.getProductId(),
+                entity.getQuantity(),
+                entity.getPricePerItem(),
+                entity.getTotalPrice(),
+                entity.getCreatedAt()
+        );
     }
 }
