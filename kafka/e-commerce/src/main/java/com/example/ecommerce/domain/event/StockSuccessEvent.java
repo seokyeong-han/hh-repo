@@ -1,12 +1,12 @@
 package com.example.ecommerce.domain.event;
 
-import com.example.ecommerce.api.order.dto.ProductOrderItem;
+import com.example.ecommerce.domain.product.dto.ProductOrderItemMessage;
 
 import java.util.List;
 
 public record StockSuccessEvent(
         String orderId,
         Long userId,
-        List<ProductOrderItem> items
+        List<ProductOrderItemMessage> items
 ) {
 }
