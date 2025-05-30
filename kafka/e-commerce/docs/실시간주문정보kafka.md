@@ -51,6 +51,7 @@ order-service	| 주문 생성	|order.created	                |payment.success, s
 stock-service	| 재고 처리	|stock.success, stock.rollback	|order.start, stock.rollback
 payment-service	| 결제 처리	|payment.success, order.cancel, |stock.rollback	payment.request
 ```
+-----------------------------------------------------------------------------------------------------------------
 
 ### 1. 📦 주문 시작 요청 → `orderController`
 
