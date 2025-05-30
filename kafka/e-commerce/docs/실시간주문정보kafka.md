@@ -44,6 +44,14 @@ KafkaConsumerConfig : https://github.com/seokyeong-han/hh-repo/blob/step17/kafka
 KafkaProducerConfig : https://github.com/seokyeong-han/hh-repo/blob/step17/kafka/e-commerce/src/main/java/com/example/ecommerce/config/KafkaProducerConfig.java
 
 -----------------------------------------------------------------------------------------------------------------
+### 서비스별 요약
+```jsx
+서비스	        |역할	        |Producer	                |Consumer
+order-service	| 주문 생성	|order.created	                |payment.success, stock.success
+stock-service	| 재고 처리	|stock.success, stock.rollback	|order.start, stock.rollback
+payment-service	| 결제 처리	|payment.success, order.cancel, |stock.rollback	payment.request
+```
+
 ### 1. 📦 주문 시작 요청 → `orderController`
 
 Kafka 메시지의 Key에 orderId를 써서 순서 보장 하기 위해 uuid로 고유 키 생성
