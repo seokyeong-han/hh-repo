@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: e-commerce
+  jpa:
+    hibernate:
+      ddl-auto: update #create-drop
+  ################
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    admin:
+      properties:
+        allow.auto.create.topics: true  # <- 토픽 자동 생성 허용
+
+    consumer:
+      group-id: test-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  ################
