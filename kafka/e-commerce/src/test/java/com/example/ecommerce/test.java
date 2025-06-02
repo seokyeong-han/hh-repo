@@ -2,6 +2,7 @@ package com.example.ecommerce;
 
 import com.example.ecommerce.api.order.dto.ProductOrderItem;
 import com.example.ecommerce.domain.event.StockSuccessEvent;
+import com.example.ecommerce.domain.product.dto.ProductOrderItemMessage;
 import net.bytebuddy.utility.dispatcher.JavaDispatcher;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class test {
     void 재고소비성공_메시지가_소비되는지_확인() throws InterruptedException {
         // given
         StockSuccessEvent event = new StockSuccessEvent("order-123", 1L, List.of(
-                new ProductOrderItem(100L, 2)
+                new ProductOrderItemMessage(100L, 2, 1000L, 2000L)
         ));
 
         // when
