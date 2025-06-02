@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
@@ -48,6 +49,8 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, OrderStartEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderConsumerFactory()); // 여기에 ConsumerFactory 주입!
+        // ✅ 수동 커밋 모드로 설정
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         return factory;
     }
     //orderCancel

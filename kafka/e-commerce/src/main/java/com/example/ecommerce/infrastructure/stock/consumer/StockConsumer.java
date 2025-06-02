@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class StockConsumer {
             groupId = "stock-service",
             containerFactory = "orderKafkaListenerContainerFactory"
     )
-    public void consume(ConsumerRecord<String, OrderStartEvent> record) {
+    public void consume(ConsumerRecord<String, OrderStartEvent> record, Acknowledgment ack) {
         OrderStartEvent event = record.value();
         String orderId = record.key(); // 또는 event.getOrderId() 사용 가능
 
@@ -37,6 +38,7 @@ public class StockConsumer {
         //재고 차감 service 호출
         try {
             List<ProductOrderItemMessage> orderItems = stockService.reduceStock(record.value(), record.key());
+            ack.acknowledge(); // ✅ 성공한 경우에만 커밋
             kafkaTemplate.send("stock.success", orderId, new StockSuccessEvent(
                     orderId, event.userId(), orderItems
             ));
