@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   redis:
     image: redis:7-alpine
@@ -23,5 +24,21 @@ services:
       - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
     volumes:
       - kafka-data:/bitnami/kafka
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
 volumes:
   kafka-data:
+  mysql-data:
