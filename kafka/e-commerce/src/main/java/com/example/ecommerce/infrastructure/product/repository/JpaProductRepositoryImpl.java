@@ -6,12 +6,18 @@ import com.example.ecommerce.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class JpaProductRepositoryImpl implements ProductRepository {
     private final ProductJpaRepository jpaRepository;
+
+    @Override
+    public long count() {
+        return jpaRepository.count();
+    }
 
     @Override
     public Optional<Product> findById(Long id) {
@@ -30,5 +36,13 @@ public class JpaProductRepositoryImpl implements ProductRepository {
     public Product save(Product product) {
         ProductJpaEntity saved = jpaRepository.save(ProductJpaEntity.fromDomain(product));
         return Product.toDomain(saved);
+    }
+
+    @Override
+    public void saveAll(List<Product> products) {
+        List<ProductJpaEntity> entities = products.stream()
+                .map(ProductJpaEntity::fromDomain)
+                .toList();
+        jpaRepository.saveAll(entities);
     }
 }

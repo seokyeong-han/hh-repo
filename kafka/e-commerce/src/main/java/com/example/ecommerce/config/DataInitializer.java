@@ -1,5 +1,6 @@
 package com.example.ecommerce.config;
 
+import com.example.ecommerce.domain.product.model.Product;
 import com.example.ecommerce.domain.product.repository.ProductRepository;
 import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.domain.user.repository.UserRepository;
@@ -30,7 +31,20 @@ public class DataInitializer  implements CommandLineRunner {
                 ));
             }
             userRepository.saveAll(users);
-            System.out.println("✅ 500명 유저 저장 완료");
+            System.out.println("✅ 테스트 유저 500명 저장 완료");
+        }
+
+        //test product setting
+        if(productRepository.count() == 0){
+            List<Product> products = new ArrayList<>();
+            for (int i = 1; i<= 10; i++) {
+                products.add(new Product(
+                        null, "test-product-"+i, 1000L*i, i
+                ));
+            }
+            productRepository.saveAll(products);
+            System.out.println("✅ 테스트 상품 저장 완료");
+
         }
 
 

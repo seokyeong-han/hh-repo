@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @RequiredArgsConstructor
-@Table(name = "product")
+@Table(name = "products")
 public class ProductJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
