@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.user.model.User;
 import com.example.ecommerce.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,6 +14,11 @@ public class JpaUserRepositoryImpl implements UserRepository {
 
     public JpaUserRepositoryImpl(UserJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
+    }
+
+    @Override
+    public long count() {
+        return jpaRepository.count();
     }
 
     @Override
@@ -26,5 +32,14 @@ public class JpaUserRepositoryImpl implements UserRepository {
         UserJpaEntity saved = jpaRepository.save(UserJpaEntity.fromDomain(user));
         return User.toDomain(saved);
     }
+
+    @Override
+    public void saveAll(List<User> users) {
+        List<UserJpaEntity> entities = users.stream()
+                .map(UserJpaEntity::fromDomain)
+                .toList();
+        jpaRepository.saveAll(entities);
+    }
+
 
 }
