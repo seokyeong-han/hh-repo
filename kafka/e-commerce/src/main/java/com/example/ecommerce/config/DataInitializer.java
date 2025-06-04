@@ -39,7 +39,7 @@ public class DataInitializer  implements CommandLineRunner {
             List<Product> products = new ArrayList<>();
             for (int i = 1; i<= 10; i++) {
                 products.add(new Product(
-                        null, "test-product-"+i, 1000L*i, i
+                        null, "test-product-"+i, 1L+i, i*50
                 ));
             }
             productRepository.saveAll(products);
