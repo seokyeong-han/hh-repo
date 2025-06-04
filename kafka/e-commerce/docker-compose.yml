@@ -1,5 +1,11 @@
 version: "3.8"
 services:
+  k6:
+    image: grafana/k6
+    container_name: k6-dev
+    volumes:
+      - ./k6-scripts:/scripts
+    entrypoint: [ "k6", "run", "/scripts/load-test.js" ]
   redis:
     image: redis:7-alpine
     container_name: redis-dev
