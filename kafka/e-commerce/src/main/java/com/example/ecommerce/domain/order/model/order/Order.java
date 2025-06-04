@@ -24,6 +24,10 @@ public class Order {
     }
 
     public Order(Long id, Long userId, Long totalPrice, LocalDateTime createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.totalPrice = totalPrice;
+        this.createdAt = createdAt;
     }
 
     // 정적 팩토리 메서드 (JPA Entity → Domain)

@@ -13,4 +13,14 @@ public class ProductOrderItemMessage {
     private long pricePerItem;   // 단가
     private long totalPrice;     // 총액
 
+    @Override
+    public String toString() {
+        return "ProductOrderItemMessage{" +
+                "productId=" + productId +
+                ", quantity=" + quantity +
+                ", pricePerItem=" + pricePerItem +
+                ", totalPrice=" + totalPrice +
+                '}';
+    }
+
 }
