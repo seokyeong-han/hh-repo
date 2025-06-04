@@ -1,6 +1,36 @@
+version: '3.8'
 services:
   redis:
     image: redis:7-alpine
     container_name: redis-dev
     ports:
       - "6380:6379"  # 외부 6380포트로 사용
+  kafka:
+    image: bitnami/kafka:3.6
+    container_name: kafka-dev
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft 모드 설정
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller #Kafka를 KRaft 모드로 설정. 이 인스턴스가 broker이자 controller 역할을 동시에 수행함.
+      - KAFKA_CFG_NODE_ID=1 #KRaft 클러스터 내에서 이 노드의 고유 ID. 중복되면 안 됨.
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-dev:9093 # 노드 ID 1이 kafka-dev:9093에서 컨트롤러 역할을 한다는 의미
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      # PLAINTEXT://:9092 → 일반 Kafka 브로커 클라이언트 연결용
+      # CONTROLLER://:9093 → KRaft 내부 컨트롤러 통신용
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT #각 리스너에 어떤 프로토콜을 적용할지 지정 (여기선 둘 다 PLAINTEXT).
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT #브로커 간 통신에 사용할 리스너 이름 지정 (PLAINTEXT).
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER #컨트롤러 통신에 사용할 리스너 이름 지정 (CONTROLLER).
+      - KAFKA_KRAFT_CLUSTER_ID=LpSKhSLNTfOOir1Qx8VjYg
+      - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+    volumes:
+      - kafka-data:/bitnami/kafka #log
+    command: ##kafka-data 볼륨이 처음 생성되었을 때만 실행 (자동포멧)
+      - /bin/bash
+      - -c
+      - |
+        kafka-storage.sh format --ignore-formatted -t LpSKhSLNTfOOir1Qx8VjYg -c /opt/bitnami/kafka/config/server.properties && \
+        /opt/bitnami/scripts/kafka/run.sh
+
+volumes:
+  kafka-data:
