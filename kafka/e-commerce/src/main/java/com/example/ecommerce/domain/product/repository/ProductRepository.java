@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface ProductRepository {
     long count();
+    List<Product> findAll();
     Optional<Product> findById(Long id);
     Optional<Product> findWithPessimisticLockById(Long id);
 

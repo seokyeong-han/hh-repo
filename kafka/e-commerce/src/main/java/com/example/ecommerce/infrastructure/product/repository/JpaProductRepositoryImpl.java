@@ -20,6 +20,13 @@ public class JpaProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(Product::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<Product> findById(Long id) {
         return jpaRepository.findById(id)
                 .map(Product::toDomain);
