@@ -123,7 +123,7 @@
 
 ### 테스트 결과 요약
 
-K6 테스트 log : 
+K6 테스트 log : https://github.com/seokyeong-han/hh-repo/blob/step19/kafka/e-commerce/docs/load-test.log
 
 pc성능 : 일반 개인 컴퓨터 i5, 16GB
 
@@ -165,7 +165,7 @@ export let options = {
     ]
 };
 ```
-K6 테스트 log :
+K6 테스트 log : https://github.com/seokyeong-han/hh-repo/blob/step19/kafka/e-commerce/docs/load-test-throttled.log
 
 ### 테스트 결과 요약
 
