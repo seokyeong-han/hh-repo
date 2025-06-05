@@ -1,4 +1,4 @@
-package com.example.ecommerce.config;
+package com.example.ecommerce.common.config;
 
 import com.example.ecommerce.domain.event.*;
 import org.apache.kafka.clients.producer.ProducerConfig;

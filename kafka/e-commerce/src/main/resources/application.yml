@@ -1,7 +1,7 @@
 spring:
   application:
     name: e-commerce
-  ################
+  ################################################################
   datasource:
     url: jdbc:mysql://localhost:3306/test_db
     username: testuser
@@ -14,7 +14,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  ################
+  ################################################################
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
+    cache:
+      redis:
+        default-ttl: PT1H
+        cache-ttls:
+          'product:detail': PT6H
+          'product:list': PT30M
+  ################################################################
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -31,3 +43,6 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   ################
+logging:
+  level:
+    org.springframework.data.redis: DEBUG

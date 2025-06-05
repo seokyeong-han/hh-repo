@@ -10,6 +10,12 @@ public class Product {
     private Long price;
     private Integer stock;
 
+    //기본생성자
+    public Product() {
+        // 아무 로직 없음
+    }
+
+    //전체 생성자
     public Product(Long id, String name, Long price, Integer stock) {
         this.id = id;
         this.name = name;

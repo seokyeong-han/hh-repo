@@ -25,8 +25,8 @@ public class User {
 
     //잔액 차감
     public void deduct(Long amount) {
-        if (amount == null || amount <= 0) throw new IllegalArgumentException("금액이 올바르지 않습니다.");
-        if (this.balance < amount) throw new IllegalArgumentException("잔액이 부족합니다.");
+        if (amount == null || amount <= 0) throw new IllegalArgumentException("⛔ 금액이 올바르지 않습니다.");
+        if (this.balance < amount) throw new IllegalArgumentException("⛔ 잔액이 부족합니다.");
         this.balance -= amount;
     }
 

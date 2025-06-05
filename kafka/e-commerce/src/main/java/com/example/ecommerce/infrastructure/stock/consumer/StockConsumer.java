@@ -38,6 +38,8 @@ public class StockConsumer {
         //재고 차감 service 호출
         try {
             List<ProductOrderItemMessage> orderItems = stockService.reduceStock(record.value(), record.key());
+            log.info("✅ Reduced stock for orderId={}, items={}", record.key(), orderItems);
+
             ack.acknowledge(); // ✅ 성공한 경우에만 커밋
             kafkaTemplate.send("stock.success", orderId, new StockSuccessEvent(
                     orderId, event.userId(), orderItems

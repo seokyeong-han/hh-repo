@@ -19,7 +19,7 @@ public class PaymentRequestConsumer {
     private static final Logger log = LoggerFactory.getLogger(PaymentRequestConsumer.class);
 
     private final PaymentService paymentService;
-    private final KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate;
+    //private final KafkaTemplate<String, PaymentSuccessEvent> kafkaTemplate;
     private final KafkaTemplate<String, OrderCancelEvent> kafkaTemplate2;
     private final KafkaTemplate<String, StockRollbackEvent> kafkaTemplate3;
 
@@ -38,9 +38,9 @@ public class PaymentRequestConsumer {
         try {
             paymentService.paymentProcessor(event.userId(), event.totalAmount());
             log.info("결제 성공");
-            kafkaTemplate.send("payment.success", orderId, new PaymentSuccessEvent());
+            //kafkaTemplate.send("payment.success", orderId, new PaymentSuccessEvent());
         }catch (Exception e){
-            log.info("결재 실패 :: 주문 취소, 재고롤백 이벤트 발행");
+            log.info("결재 실패 :: 주문 취소, 재고롤백 이벤트 발행 ==>"+e.getMessage());
             //1.주문 취소 이벤트 발행
             kafkaTemplate2.send("order.cencel", orderId, new OrderCancelEvent(
                     orderId, event.resultOrderId(), event.userId()
