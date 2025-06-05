@@ -1,0 +1,103 @@
+k6-dev  |
+k6-dev  |          /\      Grafana   /‾‾/
+k6-dev  |     /\  /  \     |\  __   /  /
+k6-dev  |    /  \/    \    | |/ /  /   ‾‾\
+k6-dev  |   /          \   |   (  |  (‾)  |
+k6-dev  |  / __________ \  |_|\_\  \_____/
+k6-dev  |
+k6-dev  |      execution: local
+k6-dev  |         script: /scripts/load-test.js
+k6-dev  |         output: -
+k6-dev  |
+k6-dev  |      scenarios: (100.00%) 1 scenario, 500 max VUs, 48s max duration (incl. graceful stop):
+k6-dev  |               * default: Up to 500 looping VUs for 18s over 4 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+k6-dev  |
+k6-dev  |
+k6-dev  | running (00.9s), 001/500 VUs, 0 complete and 0 interrupted iterations
+k6-dev  | default   [   5% ] 001/500 VUs  00.9s/18.0s
+k6-dev  |
+k6-dev  | running (01.9s), 001/500 VUs, 1 complete and 0 interrupted iterations
+k6-dev  | default   [  11% ] 001/500 VUs  01.9s/18.0s
+k6-dev  |
+k6-dev  | running (02.9s), 469/500 VUs, 2 complete and 0 interrupted iterations
+k6-dev  | default   [  16% ] 469/500 VUs  02.9s/18.0s
+k6-dev  |
+k6-dev  | running (03.9s), 500/500 VUs, 462 complete and 0 interrupted iterations
+k6-dev  | default   [  22% ] 500/500 VUs  03.9s/18.0s
+k6-dev  |
+k6-dev  | running (04.9s), 465/500 VUs, 952 complete and 0 interrupted iterations
+k6-dev  | default   [  27% ] 465/500 VUs  04.9s/18.0s
+k6-dev  |
+k6-dev  | running (05.9s), 414/500 VUs, 1417 complete and 0 interrupted iterations
+k6-dev  | default   [  33% ] 414/500 VUs  05.9s/18.0s
+k6-dev  |
+k6-dev  | running (06.9s), 386/500 VUs, 1831 complete and 0 interrupted iterations
+k6-dev  | default   [  39% ] 386/500 VUs  06.9s/18.0s
+k6-dev  |
+k6-dev  | running (07.9s), 357/500 VUs, 2217 complete and 0 interrupted iterations
+k6-dev  | default   [  44% ] 357/500 VUs  07.9s/18.0s
+k6-dev  |
+k6-dev  | running (08.9s), 328/500 VUs, 2574 complete and 0 interrupted iterations
+k6-dev  | default   [  50% ] 328/500 VUs  08.9s/18.0s
+k6-dev  |
+k6-dev  | running (09.9s), 299/500 VUs, 2902 complete and 0 interrupted iterations
+k6-dev  | default   [  55% ] 299/500 VUs  09.9s/18.0s
+k6-dev  |
+k6-dev  | running (10.9s), 270/500 VUs, 3201 complete and 0 interrupted iterations
+k6-dev  | default   [  61% ] 270/500 VUs  10.9s/18.0s
+k6-dev  |
+k6-dev  | running (11.9s), 241/500 VUs, 3471 complete and 0 interrupted iterations
+k6-dev  | default   [  66% ] 241/500 VUs  11.9s/18.0s
+k6-dev  |
+k6-dev  | running (12.9s), 212/500 VUs, 3712 complete and 0 interrupted iterations
+k6-dev  | default   [  72% ] 212/500 VUs  12.9s/18.0s
+k6-dev  |
+k6-dev  | running (13.9s), 178/500 VUs, 3924 complete and 0 interrupted iterations
+k6-dev  | default   [  77% ] 178/500 VUs  13.9s/18.0s
+k6-dev  |
+k6-dev  | running (14.9s), 139/500 VUs, 4102 complete and 0 interrupted iterations
+k6-dev  | default   [  83% ] 139/500 VUs  14.9s/18.0s
+k6-dev  |
+k6-dev  | running (15.9s), 104/500 VUs, 4241 complete and 0 interrupted iterations
+k6-dev  | default   [  89% ] 104/500 VUs  15.9s/18.0s
+k6-dev  |
+k6-dev  | running (16.9s), 062/500 VUs, 4345 complete and 0 interrupted iterations
+k6-dev  | default   [  94% ] 062/500 VUs  16.9s/18.0s
+k6-dev  |
+k6-dev  | running (17.9s), 030/500 VUs, 4407 complete and 0 interrupted iterations
+k6-dev  | default   [ 100% ] 030/500 VUs  17.9s/18.0s
+k6-dev  |
+k6-dev  |
+k6-dev  |   █ TOTAL RESULTS
+k6-dev  |
+k6-dev  |     checks_total.......................: 13311   723.166655/s
+k6-dev  |     checks_succeeded...................: 100.00% 13311 out of 13311
+k6-dev  |     checks_failed......................: 0.00%   0 out of 13311
+k6-dev  |
+k6-dev  |     ✓ 상품 조회 성공 status is 200
+k6-dev  |     ✓ 인기 상품 조회 성공 status is 200
+k6-dev  |     ✓ 주문 성공 status is 200
+k6-dev  |
+k6-dev  |     HTTP
+k6-dev  |     http_req_duration.......................................................: avg=4.78ms min=798.95µs med=2.35ms max=138.9ms p(90)=7.52ms p(95)=9.39ms
+k6-dev  |       { expected_response:true }............................................: avg=4.78ms min=798.95µs med=2.35ms max=138.9ms p(90)=7.52ms p(95)=9.39ms
+k6-dev  |     http_req_failed.........................................................: 0.00%  0 out of 13311
+k6-dev  |     http_reqs...............................................................: 13311  723.166655/s
+k6-dev  |
+k6-dev  |     EXECUTION
+k6-dev  |     iteration_duration......................................................: avg=1.01s  min=1s       med=1.01s  max=1.22s   p(90)=1.01s  p(95)=1.04s
+k6-dev  |     iterations..............................................................: 4437   241.055552/s
+k6-dev  |     vus.....................................................................: 30     min=1          max=500
+k6-dev  |     vus_max.................................................................: 500    min=500        max=500
+k6-dev  |
+k6-dev  |     NETWORK
+k6-dev  |     data_received...........................................................: 4.2 MB 227 kB/s
+k6-dev  |     data_sent...............................................................: 1.8 MB 95 kB/s
+k6-dev  |
+k6-dev  |
+k6-dev  |
+k6-dev  |
+k6-dev  | running (18.4s), 000/500 VUs, 4437 complete and 0 interrupted iterations
+k6-dev  | default ✓ [ 100% ] 000/500 VUs  18s
+k6-dev exited with code 0
+PS C:\dev\test\hh\hh-repo\kafka\e-commerce>

@@ -1,0 +1,109 @@
+time="2025-06-05T16:48:14+09:00" level=warning msg="C:\\dev\\test\\hh\\hh-repo\\kafka\\e-commerce\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+[+] Running 1/1
+ ✔ Container k6-dev  Created                                                                                                                   0.0s
+Attaching to k6-dev
+k6-dev  |
+k6-dev  |          /\      Grafana   /‾‾/
+k6-dev  |     /\  /  \     |\  __   /  /
+k6-dev  |    /  \/    \    | |/ /  /   ‾‾\
+k6-dev  |   /          \   |   (  |  (‾)  |
+k6-dev  |  / __________ \  |_|\_\  \_____/
+k6-dev  |
+k6-dev  |      execution: local
+k6-dev  |         script: /scripts/load-test.js
+k6-dev  |         output: -
+k6-dev  |
+k6-dev  |      scenarios: (100.00%) 1 scenario, 1000 max VUs, 48s max duration (incl. graceful stop):
+k6-dev  |               * default: Up to 1000 looping VUs for 18s over 4 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+k6-dev  |
+k6-dev  |
+k6-dev  | running (00.8s), 0001/1000 VUs, 0 complete and 0 interrupted iterations
+k6-dev  | default   [   5% ] 0001/1000 VUs  00.8s/18.0s
+k6-dev  |
+k6-dev  | running (01.8s), 0001/1000 VUs, 1 complete and 0 interrupted iterations
+k6-dev  | default   [  10% ] 0001/1000 VUs  01.8s/18.0s
+k6-dev  |
+k6-dev  | running (02.8s), 0756/1000 VUs, 2 complete and 0 interrupted iterations
+k6-dev  | default   [  16% ] 0756/1000 VUs  02.8s/18.0s
+k6-dev  |
+k6-dev  | running (04.0s), 1000/1000 VUs, 256 complete and 0 interrupted iterations
+k6-dev  | default   [  22% ] 1000/1000 VUs  04.0s/18.0s
+k6-dev  |
+k6-dev  | running (04.8s), 1000/1000 VUs, 714 complete and 0 interrupted iterations
+k6-dev  | default   [  27% ] 1000/1000 VUs  04.8s/18.0s
+k6-dev  |
+k6-dev  | running (05.8s), 0842/1000 VUs, 1432 complete and 0 interrupted iterations
+k6-dev  | default   [  32% ] 0842/1000 VUs  05.8s/18.0s
+k6-dev  |
+k6-dev  | running (06.8s), 0770/1000 VUs, 2206 complete and 0 interrupted iterations
+k6-dev  | default   [  38% ] 0770/1000 VUs  06.8s/18.0s
+k6-dev  |
+k6-dev  | running (07.8s), 0698/1000 VUs, 2918 complete and 0 interrupted iterations
+k6-dev  | default   [  44% ] 0698/1000 VUs  07.8s/18.0s
+k6-dev  |
+k6-dev  | running (08.8s), 0624/1000 VUs, 3440 complete and 0 interrupted iterations
+k6-dev  | default   [  49% ] 0624/1000 VUs  08.8s/18.0s
+k6-dev  |
+k6-dev  | running (09.8s), 0531/1000 VUs, 4062 complete and 0 interrupted iterations
+k6-dev  | default   [  55% ] 0531/1000 VUs  09.8s/18.0s
+k6-dev  |
+k6-dev  | running (10.8s), 0474/1000 VUs, 4563 complete and 0 interrupted iterations
+k6-dev  | default   [  60% ] 0474/1000 VUs  10.8s/18.0s
+k6-dev  |
+k6-dev  | running (11.8s), 0393/1000 VUs, 5017 complete and 0 interrupted iterations
+k6-dev  | default   [  66% ] 0393/1000 VUs  11.8s/18.0s
+k6-dev  |
+k6-dev  | running (12.8s), 0325/1000 VUs, 5374 complete and 0 interrupted iterations
+k6-dev  | default   [  71% ] 0325/1000 VUs  12.8s/18.0s
+k6-dev  |
+k6-dev  | running (13.8s), 0271/1000 VUs, 5681 complete and 0 interrupted iterations
+k6-dev  | default   [  77% ] 0271/1000 VUs  13.8s/18.0s
+k6-dev  |
+k6-dev  | running (14.8s), 0212/1000 VUs, 5941 complete and 0 interrupted iterations
+k6-dev  | default   [  82% ] 0212/1000 VUs  14.8s/18.0s
+k6-dev  |
+k6-dev  | running (15.8s), 0161/1000 VUs, 6149 complete and 0 interrupted iterations
+k6-dev  | default   [  88% ] 0161/1000 VUs  15.8s/18.0s
+k6-dev  |
+k6-dev  | running (16.8s), 0108/1000 VUs, 6307 complete and 0 interrupted iterations
+k6-dev  | default   [  94% ] 0108/1000 VUs  16.8s/18.0s
+k6-dev  |
+k6-dev  | running (17.8s), 0060/1000 VUs, 6415 complete and 0 interrupted iterations
+k6-dev  | default   [  99% ] 0060/1000 VUs  17.8s/18.0s
+k6-dev  |
+k6-dev  | running (18.8s), 0006/1000 VUs, 6475 complete and 0 interrupted iterations
+k6-dev  | default ↓ [ 100% ] 0011/1000 VUs  18s
+k6-dev  |
+k6-dev  |
+k6-dev  |   █ TOTAL RESULTS
+k6-dev  |
+k6-dev  |     checks_total.......................: 19443   1023.389051/s
+k6-dev  |     checks_succeeded...................: 100.00% 19443 out of 19443
+k6-dev  |     checks_failed......................: 0.00%   0 out of 19443
+k6-dev  |
+k6-dev  |     ✓ 상품 조회 성공 status is 200
+k6-dev  |     ✓ 인기 상품 조회 성공 status is 200
+k6-dev  |     ✓ 주문 성공 status is 200
+k6-dev  |
+k6-dev  |     HTTP
+k6-dev  |     http_req_duration.......................................................: avg=80.14ms min=541.58µs med=31.16ms max=799.9ms p(90)=223.31ms p(95)=333.44ms
+k6-dev  |       { expected_response:true }............................................: avg=80.14ms min=541.58µs med=31.16ms max=799.9ms p(90)=223.31ms p(95)=333.44ms
+k6-dev  |     http_req_failed.........................................................: 0.00%  0 out of 19443
+k6-dev  |     http_reqs...............................................................: 19443  1023.389051/s
+k6-dev  |
+k6-dev  |     EXECUTION
+k6-dev  |     iteration_duration......................................................: avg=1.27s   min=1s       med=1.1s    max=2.62s   p(90)=1.8s     p(95)=2.03s
+k6-dev  |     iterations..............................................................: 6481   341.129684/s
+k6-dev  |     vus.....................................................................: 6      min=1          max=1000
+k6-dev  |     vus_max.................................................................: 1000   min=1000       max=1000
+k6-dev  |
+k6-dev  |     NETWORK
+k6-dev  |     data_received...........................................................: 6.1 MB 321 kB/s
+k6-dev  |     data_sent...............................................................: 2.6 MB 135 kB/s
+k6-dev  |
+k6-dev  |
+k6-dev  |
+k6-dev  |
+k6-dev  | running (19.0s), 0000/1000 VUs, 6481 complete and 0 interrupted iterations
+k6-dev  | default ✓ [ 100% ] 0000/1000 VUs  18s
+k6-dev exited with code 0
